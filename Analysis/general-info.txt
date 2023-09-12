@@ -1,1 +1,12 @@
+This folder contains .py files with functions for the analysis of the collect-and-guide-liquid dataset (name to be changed).
+
+
+### FUNCTIONS ###
+
+- import_data: for importing data
+- functions: main functions, for surface and handtracking data
+- functions_cursor: complementary functions respective to cursor data
+- plots: for plotting the main functions
+- auxiliary: helper functions for "in between" computations
+
 
