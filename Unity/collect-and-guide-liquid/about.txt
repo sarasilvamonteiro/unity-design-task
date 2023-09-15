@@ -1,7 +1,13 @@
-These folder don't contain the actual project yet.
+These folders don't contain the actual project yet.
 Ideally, I want to merge non-vr and vr into one project (in the future).
 Environment creation in the VR setup is not automatized due to how heavy the computations are, that's why the task is divided in two.
 
 To do:
 - use prefabs for both setups (change non-vr to prefabs)
 - check that scripts work for both setups
+
+VR setup:
+- what is the type of unity project (no URP...3D...)
+- version
+
+
