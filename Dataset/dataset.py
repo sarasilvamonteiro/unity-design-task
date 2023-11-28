@@ -340,7 +340,7 @@ class ManageData():
         # we need to copy the original data so that it doesn't change the original
         preprocessed_data = copy.deepcopy(data)
 
-        for column in data.iloc[:, 1:3]:
+        for column in data.iloc[:, 1:]:
             for i, syllable in enumerate(data[column]):
 
                 if resample == False:
