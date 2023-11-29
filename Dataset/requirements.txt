@@ -1,2 +1,2 @@
 If you get this error (typeError: issubclass() arg 1 must be a class) when loading 
-the dataset from ManageData().load_syllables() try downgrading pandas to pandas==1.3.4
+the dataset from ManageData().load_syllables(), try downgrading pandas to pandas==1.3.4
