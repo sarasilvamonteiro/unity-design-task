@@ -39,7 +39,10 @@ public class SurfaceInteractionPhysics : MonoBehaviour
             Physics.IgnoreCollision(sphere.GetComponent<SphereCollider>(), gameObject.GetComponent<SphereCollider>());
         }
 
-        //Physics.IgnoreCollision(GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<CapsuleCollider>(), gameObject.GetComponent<SphereCollider>()); 
+        if (GameObject.FindGameObjectWithTag("Player") != null)
+        {
+            Physics.IgnoreCollision(GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<CapsuleCollider>(), gameObject.GetComponent<SphereCollider>());
+        }
 
 
         // 3.
