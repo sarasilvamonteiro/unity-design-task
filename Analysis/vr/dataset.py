@@ -34,7 +34,9 @@ class ManageData():
         self.cmap = np.load('surface_colormap.npy')
 
 
-    def section_cmap(self, LCR, BFM):
+    def section_cmap(self, LCR, BMF):
+
+        print(self.cmap.shape)
 
         LCR_dict = {'L': 0,
                     'CL': 25,
@@ -42,11 +44,13 @@ class ManageData():
                     'CR': 75,
                     'R': 99}
 
-        BFM_dict = {'B': 0,
+        BMF_dict = {'B': 0,
                     'M': 50,
                     'F': 99}
 
-        section_cmap = self.cmap[BFM_dict[BFM],LCR_dict[LCR]]
+
+        print(BMF_dict[BMF], LCR_dict[LCR])
+        section_cmap = self.cmap[BMF_dict[BMF],LCR_dict[LCR]]
         return section_cmap
 
 
