@@ -62,6 +62,7 @@ class ManageData():
     ##### Import Data #####
     #######################
     def import_general(self, subj, trial, holes, toDataFrame = False):
+        print(f'Importing general data...')
         if self.IOS:
             tree = ET.parse("" + self.path + "/subject_" + str(int(subj))
                             + "/" + str(holes) + "_holes_1_flows_general_" + str(trial) + ".xml")
@@ -75,6 +76,7 @@ class ManageData():
         else:
             return root
     def import_hands(self, subj, trial, holes, hand, toDataFrame = False):
+        print(f'Importing {hand.lower()} hand data...')
         if self.IOS:
             tree = ET.parse(r"" + self.path + "/subject_" + str(int(subj)) + "/" +
                              str(holes) + "_holes_1_flows_" + str(hand) + "_hand_" + str(trial) + ".xml")
@@ -88,6 +90,7 @@ class ManageData():
         else:
             return root
     def import_surface(self, subj=None, trial=None, holes=None, frame=slice(None), toDataFrame=False):
+        print(f'Importing surface data...')
         # this is just if we want to import initial positions
         if subj == None:
             subj = self.subjects[0]
@@ -99,7 +102,8 @@ class ManageData():
             tree = ET.parse(r"" + self.path + "/subject_" + str(int(subj))
                             + "/" + str(holes) + "_holes_1_flows_surface_" + str(trial) + ".xml")
         if self.Windows:
-            tree = ET.parse(self.path + "\subject_" + str(int(subj)) + "\\" + str(holes) + "_holes_1_flows_surface_" + str(trial))
+            tree = ET.parse(self.path + "\subject_" + str(int(subj)) + "\\" +
+                            str(holes) + "_holes_1_flows_surface_" + str(trial))
         root = tree.getroot()
 
         if toDataFrame:
@@ -108,6 +112,7 @@ class ManageData():
             return root[frame]
 
     def import_fluid(self, subj, trial, holes, toDataFrame=False):
+        print(f'Importing fluid data...')
         if self.IOS:
             tree = ET.parse(r"" + self.path + "/subject_" + str(int(subj))
                             + "/" + str(holes) + "_holes_1_flows_fluid_" + str(trial) + ".xml")
@@ -130,13 +135,14 @@ class ManageData():
         for child in root:
             row_data = {}
             for element in child:
+                #print(f'Reading {element.tag}...')
+                # if column doesn't have nested values:
                 if len(element) == 0:
                     row_data[element.tag] = element.text
-                # check if column has nested columns (e.g. x,y,z)
+                # check if column has nested values (e.g. x,y,z)
                 else:
                     row_data_1 = {}
                     for axis in element:
-                        print(axis)
                         row_data_1[axis.tag] = axis.text
                     row_data[element.tag] = row_data_1
 
@@ -147,7 +153,7 @@ class ManageData():
         df = pd.DataFrame(df_data, columns=df_columns)
 
         # do something like this if you want to keep a dataframe
-        # inside the main columns (not recommendable, takes longer)
+        # inside the main columns (not recommended, takes longer)
         #for child in root:
         #    for element in child:
         #        if len(element) > 0:
@@ -193,15 +199,32 @@ class ManageData():
 
     def get_syllables(self):
         """
+        Load data and check when hands are touching the surface.
+        Create a Dataframe with the frames where those deformations occur,
+        labeled as individual syllables.
+        Save the resulting Dataframe.
         """
 
-        timestamps_df = pd.DataFrame()
         surface_syllables_df = pd.DataFrame()
         hand_syllables_df = pd.DataFrame()
+        eye_syllables_df = pd.DataFrame()
+        touched_spheres_df = pd.DataFrame()
 
-        def save_to_syllable_df(object_data, object_df, hand):
+        def save_to_syllable_df(object_df, object_data, hand, transpose=True):
+            """
+            Select columns with position and time information.
+            Add columns with complementary information.
+            :param object_data: imported data (either from hand or surface)
+            :param object_df: Dataframe where syllable information is being saved.
+            :param hand: Which hand is being used.
+            :return: Resulting new row.
+            """
 
-            new_syllable = pd.DataFrame(object_data.iloc[frame, list(range(object_data.shape[1]-3)) + [object_data.shape[1]-1]]).T
+            # current frame, first columns (position), last column (time)
+            new_syllable = pd.DataFrame(object_data)
+            if transpose:
+                new_syllable = new_syllable.T
+            # complementary information columns
             columns_dict = {'hand': hand, 'level_order': shown, 'holes': int(holes),
                             'trial': int(trial), 'subject': int(subj), 'syllable': syllable}
             for col_name, col_value in columns_dict.items():
@@ -217,10 +240,9 @@ class ManageData():
             trial_info = self.load_info(subj)
             last_holes = trial_info['Holes'][0] # first level shown (1 or 2 holes)
             for [trial, holes] in [[1, 1]]:
-
             #for [trial, holes] in trial_info.apply(lambda row: [row['Trial'], row['Holes']], axis=1):
                 # check level order
-                print(subj, trial, holes)
+                print(f'Getting syllables for subject {subj}, trial {trial}, holes {holes}:')
                 if holes != last_holes:
                     shown += 1
                 last_holes = holes
@@ -233,37 +255,71 @@ class ManageData():
                 # get indexes where touches are true (deformation occurs)
                 L_touch = [i for i, v in enumerate(surface_data['LTouch']) if v == 'true']
                 R_touch = [i for i, v in enumerate(surface_data['RTouch']) if v == 'true']
+                # get touched spheres
+                L_touched_spheres = general_data['SphereID_LTouch']
+                R_touched_spheres = general_data['SphereID_RTouch']
                 # initialize syllable count
                 syllable = 0
                 last_syllable = syllable
 
+                print('Generating syllables...')
                 # save data when deformation occurs
                 for frame in range(len(general_data)):
                     touch = False
-                    print(syllable, frame)
+                    #print(syllable, frame)
                     # get two frames before and two frames after deformation
                     # check if frame is in deformation indexes
                     if any([f in L_touch for f in np.arange(frame-1, frame+2, 1)]):
-                        ### save just timestamps ###
-                        #timestamps_df = save_to_syllable_df(general_data.iloc[frame, -1], timestamps_df, hand='Left')
                         ### save surface syllables ###
-                        surface_syllables_df = save_to_syllable_df(surface_data, surface_syllables_df, hand='Left')
+                        surface_syllables_df = save_to_syllable_df(surface_syllables_df,
+                                                                   surface_data.iloc[frame,
+                                                                   list(range(surface_data.shape[1]-3)) +
+                                                                   [surface_data.shape[1]-1]], hand='Left')
                         ### save hand syllables ###
-                        hand_syllables_df = save_to_syllable_df(Lhand_data, hand_syllables_df, hand='Left')
-                        # update last_syllable
-                        last_syllable = syllable
-                        touch = True
-                    if any([f in R_touch for f in np.arange(frame-1, frame+2, 1)]):
-                        ### save just timestamps ###
-                        #timestamps_df = save_to_syllable_df(general_data.iloc[frame, -1], timestamps_df, hand='Right')
-                        ### save surface syllables ###
-                        surface_syllables_df = save_to_syllable_df(surface_data, surface_syllables_df, hand='Right')
-                        ### save hand syllables ###
-                        hand_syllables_df = save_to_syllable_df(Rhand_data, hand_syllables_df, hand='Right')
+                        hand_syllables_df = save_to_syllable_df(hand_syllables_df,
+                                                                Lhand_data.iloc[frame, list(range(Lhand_data.shape[1]-3)) +
+                                                                [Lhand_data.shape[1]-1]], hand='Left')
+                        ### save eye syllables ###
+                        eye_syllables_df = save_to_syllable_df(eye_syllables_df,
+                                                               general_data.iloc[frame, [1] +
+                                                               [general_data.shape[1]-1]], hand='Left')
                         # update last_syllable
                         last_syllable = syllable
                         touch = True
 
+                    if any([f in R_touch for f in np.arange(frame-1, frame+2, 1)]):
+                        ### save surface syllables ###
+                        surface_syllables_df = save_to_syllable_df(surface_syllables_df,
+                                                                   surface_data.iloc[frame,
+                                                                   list(range(surface_data.shape[1]-3)) +
+                                                                   [surface_data.shape[1]-1]], hand='Right')
+                        ### save hand syllables ###
+                        hand_syllables_df = save_to_syllable_df(hand_syllables_df,
+                                                                Rhand_data.iloc[frame, list(range(Rhand_data.shape[1]-3)) +
+                                                                [Rhand_data.shape[1]-1]], hand='Right')
+                        ### save eye syllables ###
+                        eye_syllables_df = save_to_syllable_df(eye_syllables_df,
+                                                               general_data.iloc[frame, [1] +
+                                                               [general_data.shape[1]-1]], hand='Right')
+                        # update last_syllable
+                        last_syllable = syllable
+                        touch = True
+
+                    ### save touched spheres ###
+                    if L_touched_spheres.iloc[frame] != None:
+                        spheres_list = L_touched_spheres.iloc[frame].split(',')
+                        for sphere in spheres_list:
+                            touched_spheres_df = save_to_syllable_df(touched_spheres_df,
+                                                                     [{'SphereID': sphere,
+                                                                       'Timestamp': general_data['Timestamp'][frame]}],
+                                                                     hand='Left', transpose=False)
+                    if R_touched_spheres.iloc[frame] != None:
+                        spheres_list = R_touched_spheres.iloc[frame].split(',')
+                        for sphere in spheres_list:
+                            touched_spheres_df = save_to_syllable_df(touched_spheres_df,
+                                                                     [{'SphereID': sphere,
+                                                                       'Timestamp': general_data['Timestamp'][frame]}],
+                                                                     hand='Right', transpose=False)
                     if not touch:
                         touch = False
                         syllable = last_syllable + 1
@@ -271,16 +327,16 @@ class ManageData():
         # save syllables
         surface_syllables_df.set_index(['syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('surface_syllables')
         hand_syllables_df.set_index(['syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('hand_syllables')
+        eye_syllables_df.set_index(['syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('eye_syllables')
+        touched_spheres_df.set_index(['syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('sphereID_syllables')
+        print('Done.')
         # ..............
-
-
 
 
 
     def load_info(self, subj):
         info = pd.read_csv(self.path + '/subject_' + str(subj) + '/information.txt', sep=" ")
         return info
-
 
     def load_syllables(self, object):
         """
@@ -316,115 +372,107 @@ class ManageData():
 
         if 'PalmPosition' in data.columns:
             object = 'hands'
+            print(object)
         if 'Sphere2000' in data.columns:
             object = 'surface'
+            print(object)
+        if 'AgentLookingAt' in data.columns:
+            object = 'eye'
+            print(object)
 
         # we need to copy the original data so that it doesn't change the original
-        preprocessed_data = copy.deepcopy(data)
-        for column in data.iloc[:, 1:]:
-            for i, syllable in enumerate(data[column]):
-                if resample == False:
-                    length = len(syllable)
-                # continue if only one timeframe was recorded
-                # if len(syllable) < 2:
-                #    continue
-                # new dataframe
-                preprocess = pd.DataFrame(columns=syllable.columns, index=range(length))
-                # array of current lenght
-                sample_length = np.arange(0, len(syllable), 1)
-                # array of resampled length
-                new_length = np.arange(0, len(syllable) - 1, (len(syllable) - 1) / length)[:length]
-                # apply interpolation over each axis (x,y,z)
-                for axis in syllable.iloc[:, ]:
-                    interpolator = interp1d(sample_length, syllable[axis], kind=kind)(new_length)
-                    preprocess[axis] = interpolator
-                # convert float to bool
-                preprocess['moving'] = preprocess['moving'].astype(bool)
-                if norm_position:
-                    preprocess.iloc[:, :3] = normalizer.fit_transform(preprocess.iloc[:, :3])
-                if norm_time:
-                    preprocess.iloc[:, 3:4] = normalizer.fit_transform(preprocess.iloc[:, 3:4])
-                # substitute unsampled data by sampled data
-                preprocessed_data[column].iloc[i] = preprocess
-        preprocessed_data.to_pickle(str(object) + '_preprocessed_syllables')
-        return preprocessed_data
+        #preprocessed_data = copy.deepcopy(data)
+        # new dataframe
+        preprocessed_data = pd.DataFrame()#, index=data.index.names)
+        # get syllables index
+        syllables = np.unique(data.index.get_level_values('syllable'))
 
-    def extract_values(self, data, as_array=False):
+        # iterate over each different syllable
+        # when we select one syllable we get all the timeframes of that deformation
+        # what we want is to normalize/upsample them
+        for syllable in syllables:
+            # get joint/sphere info (column)
+            for column in data.columns:
+                for hand in data.loc[syllable].index.get_level_values('hand'):
+                    # array of current lenght
+                    sample_length = np.arange(0, len(data.loc[syllable, :, :, :, :, hand]), 1)
+                    # array of resampled length
+                    new_length = np.arange(0, len(data.loc[syllable, :, :, :, :, hand]) - 1,
+                                           (len(data.loc[syllable, :, :, :, :, hand]) - 1) / length)[:length]
+                    # apply interpolation over each axis (x,y,z)
+                    upsampled_syllable = {}
+                    # upsample joint/sphere positions (0 to length for each axis)
+                    if column != 'Timestamp':
+                        for axis in ['x', 'y', 'z']:
+                            if resample:
+                                interpolator = interp1d(sample_length,
+                                                    data.loc[syllable, :, :, :, :, hand][column].apply(lambda x: x[axis]),
+                                                    kind=kind)(new_length)
+                            if norm_position:
+                                interpolator = normalizer.fit_transform(interpolator.reshape(-1, 1))
+                            upsampled_syllable[axis] = interpolator
+                    # upsample Timestamps (0 to length)
+                    if column == 'Timestamp':
+                        if resample:
+                            interpolator = interp1d(sample_length,
+                                                data.loc[syllable, :, :, :, :, hand][column],
+                                                kind=kind)(new_length)
+                        if norm_time:
+                            interpolator = normalizer.fit_transform(interpolator.reshape(-1, 1))
+                        upsampled_syllable = interpolator
 
-        data = data.sort_values(by='syllable')
-        values = pd.DataFrame()
-        for row, index in enumerate(data.index):
-            # dropp all columns from dataframe and add a new column with those values
-            new_row = pd.DataFrame([{'subject': index[0],
-                                     'trial': index[1],
-                                     'holes': index[2],
-                                     'level_order': index[3],
-                                     'hand': index[4],
-                                     'syllable': index[5],
-                                     'features': []}])
-            features = []
-            for inner_df in data.iloc[row][1:]:
-                features.append(inner_df[['x', 'y', 'z', 'time']].values)
-            new_row['features'][0] = np.array(features).flatten()
-            values = pd.concat([values, new_row], ignore_index=True)
 
-        first_level_values = values['syllable']
-        factorized_values, unique_labels = pd.factorize(first_level_values)
-        # label_series = pd.Series(factorized_values, index=first_level_values).reset_index(drop=True).rename('syllable')
-        values = values.set_index(['subject', 'trial', 'holes', 'level_order', 'hand', 'syllable'])
-        values = values['features'].apply(pd.Series)
-        values.insert(0, 'time_interval', data['time_interval'])
-        values.insert(1, 'labels', factorized_values)
-        # values = values.set_index(['hand'])['features'].apply(pd.Series)
-        # return values as array
-        if as_array:
-            return values.values.reshape(-1, len(values.columns))
-        # return values as DataFrame
-        else:
-            return values
+                    print(column, upsampled_syllable)
 
+                    #preprocess.loc[syllable, :, :, :, :, hand] = upsampled_syllable
+                    # save upsampled column in new dataframe
+                    new_preprocess = pd.DataFrame([{column: upsampled_syllable}])#, index=list(np.unique(data.loc[syllable, :, :, :, :, hand]))*length)
+                    preprocessed_data = self.save_to_df(preprocessed_data, {column: upsampled_syllable}, hand=hand,
+                                                        shown=data.loc[syllable].index.get_level_values('level_order'),
+                                                        holes=data.loc[syllable].index.get_level_values('holes'),
+                                                        trial=data.loc[syllable].index.get_level_values('trial'),
+                                                        subj=data.loc[syllable].index.get_level_values('subject'),
+                                                        syllable=syllable, transpose=False)
+
+
+
+        # continue .......
+        
+        #preprocessed_data = pd.concat([preprocessed_data, new_preprocess])
+
+
+        #preprocessed_data.to_pickle(str(object) + '_preprocessed_syllables')
+        return preprocessed_data.set_index(['syllable','subject','trial', 'holes', 'level_order', 'hand'])
+
+
+    def save_to_df(self, object_df, object_data, hand, shown, holes, trial, subj, syllable, transpose=True):
+        """
+        Select columns with position and time information.
+        Add columns with complementary information.
+        :param object_data: imported data (either from hand or surface)
+        :param object_df: Dataframe where syllable information is being saved.
+        :param hand: Which hand is being used.
+        :return: Resulting new row.
+        """
+
+        # current frame, first columns (position), last column (time)
+        new_syllable = pd.DataFrame(object_data)
+        if transpose:
+            new_syllable = new_syllable.T
+        # complementary information columns
+        columns_dict = {'hand': hand, 'level_order': shown, 'holes': holes,
+                        'trial': trial, 'subject': subj, 'syllable': syllable}
+        for col_name, col_value in columns_dict.items():
+            new_syllable.insert(0, col_name, col_value)
+        object_df = pd.concat([object_df, new_syllable], ignore_index=True)
+
+        return object_df
 
 
 
     # check hand and surface labels
     # i can just load normally spheres and check if hand is touching it....
     # i can just load hands and check if is touching a sphere....
-
-
-
-
-    def touched_spheres(self):
-
-        # create a dataframe for all trials and a
-
-        touched_spheres_df = pd.DataFrame()
-        touched_spheres_list = []
-
-
-        touched_spheres_df.columns = ['subj', 'trial', 'holes', 'order', 'sphere', 'timestamp']
-
-        for subj in self.subjects:
-            for trial in np.arange(0,7,1):
-                for holes in np.arange(1,3,1):
-
-                    general_data = self.import_general(subj,trial,holes, toDataFrame=True)
-                    surface_data = self.import_surface(subj,trial,holes, toDataFrame=True)
-                    Lhand_data = self.import_hands(subj,trial,holes,'left')
-                    Rhand_data = self.import_hands(subj,trial,holes,'right')
-
-                    touched_spheres = general_data['TouchedSpheres']
-
-                    for spheres_list in touched_spheres:
-                        spheres_list = spheres_list.split(',')
-
-
-
-                        for sphere in spheres_list:
-
-                            sphere_data = surface_data[f'Sphere{sphere}']
-
-                            #for frame in sphere_data:
-
 
 
 
