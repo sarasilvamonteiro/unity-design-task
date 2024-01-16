@@ -18,15 +18,40 @@ class ManageData():
     """
 
     def __init__(self):
+
+        # i should create a file that saves the good subjects and the path of the data
+        # the number of spheres and the number of hand joints
+
         self.path = '/Users/smonteiro/Desktop/DesignMotorTask/Data'
         self.subjects = np.array([5,8,9,11,12,13,14,15,16,17])
         self.nr_subjects = 10
         self.nr_joints = 31
         self.nr_spheres = 145
-        self.section_list = ['CenterFrontDown', 'CenterFrontUp','LCornerDown', 'RCornerDown',
-                             'LEdgeUp', 'REdgeUp', 'LFrontUp', 'LFrontDown',
-                             'RFrontUp', 'RCornerUp', 'LCornerUp', 'BackUp']
-        #self.section_list = ['LEdgeUp', 'REdgeUp']
+        self.section_list = ['LMidUp', 'LFrontUp','CFrontUp',
+                             'RFrontUp', 'RMidUp', 'RFrontDown',
+                             'CFrontDown', 'LFrontDown', 'CBackUp',
+                             'CLFront', 'CRFront']
+        self.cmap = np.load('surface_colormap.npy')
+
+
+    def section_cmap(self, LCR, BMF):
+
+        print(self.cmap.shape)
+
+        LCR_dict = {'L': 0,
+                    'CL': 25,
+                    'C': 50,
+                    'CR': 75,
+                    'R': 99}
+
+        BMF_dict = {'B': 0,
+                    'M': 50,
+                    'F': 99}
+
+
+        print(BMF_dict[BMF], LCR_dict[LCR])
+        section_cmap = self.cmap[BMF_dict[BMF],LCR_dict[LCR]]
+        return section_cmap
 
 
     def import_hands(self, subj, trial, holes, hand):
@@ -158,7 +183,7 @@ class ManageData():
         return moving_df
 
 
-    def save_syllables(self):
+    def generate_syllables(self):
         """
         Get hand labeled data from each subject's trial videos and get hand/surface/eye positions/time
         for instances where deformations are occurring (syllables).
@@ -188,7 +213,6 @@ class ManageData():
                                              'hand': hand_title,
                                              'time_interval': [feature_i[interval], feature_f[interval]]}])
                 time = []; positions = []; moving = []
-
                 # iterate over each row
                 for frame in range(len(general_data)):
                     point_ = object_data[frame][point]
@@ -198,11 +222,9 @@ class ManageData():
                         # if hand was tracked:
                         if general_data[frame][hand_id].text == 'true' and labeled_data.hand[interval] == \
                                 self.get_hand_id(-hand_id - 1)[0]:
-
                             position_ = np.zeros(3)
                             for axis, position in zip(range(3), point_):
                                 position_[axis] = float(position.text)
-
                             time.append(timestamp)
                             positions.append(position_)
                             # check if surface is moving during this timestamp
@@ -214,14 +236,14 @@ class ManageData():
                                 moving.append(False)
 
                 positions = np.array(positions)
-
-                if len(positions) > 0:
+                
+                # we need more than one timestamp to capture movement
+                if len(positions) > 1:
                     point_id = point_.tag
                     # fix sphere id (delete in the future)
                     if point_.tag[:6] == 'Sphere':
                         sphere_id, correct_id = self.get_sphere_id(point_)
                         point_id = 'Sphere' + str(correct_id)
-
                     new_syllable = pd.DataFrame([{point_id : pd.DataFrame({'x':positions[:,0],
                                                                            'y':positions[:,1],
                                                                            'z':positions[:,2],
@@ -243,7 +265,6 @@ class ManageData():
         labeled_data = self.load_labeled_data()
         # whole data for hands [0] and surface [1]
         whole_movement = [pd.DataFrame(), pd.DataFrame()]
-
         # iterate over each surface section in list
         for feature in self.section_list:
             print(feature)
@@ -321,6 +342,13 @@ class ManageData():
         object_syllables = pd.read_pickle( object + '_syllables')
         return object_syllables
 
+    def load_preprocessed_syllables(self, object):
+        """
+        :param object: str, 'hands', 'surface' or 'eyes'
+        """
+        object_syllables = pd.read_pickle( object + '_preprocessed_syllables')
+        return object_syllables
+
     def load_surface_moving(self):
         surface_moving = pd.read_pickle('surface_moving')
         return surface_moving
@@ -328,24 +356,34 @@ class ManageData():
 
 
 
-    def preprocess(self, data, norm=True, normalizer = preprocessing.MinMaxScaler(),
-                   resample=True, length=100, kind='linear'):
+    def preprocess(self, data, norm_position=True, norm_time=True, resample=True, normalizer = preprocessing.MinMaxScaler(), length=100, kind='linear'):
         """
+        Applies normalization and resampling to the x,y,z,time data for all recorded points from data.
         :param data: DataFrame; hands or surface data to resample
-        :param length: int; new number of samples per syllable
+        :param norm_position: bool; True to normalize x,y,z (default=True)
+        :param norm_time: bool; True to normalize time (default=True)
+        :param resample: bool; True to resample (default=True)
+        :param normalizer: sklearn.preprocessing; type of scaler (default=MinMaxScaler()
+        :param length: int; new number of samples per syllable (default=100)
         :param kind: str; type of interpolation, e.g. 'linear', 'quadratic', 'cubic'
-        :return: resampled data
+        :return: DataFrame; resampled data
         """
+
+        if 'PalmPosition' in data.columns:
+            object = 'hands'
+        if 'Sphere2000' in data.columns:
+            object = 'surface'
+
 
         # we need to copy the original data so that it doesn't change the original
         preprocessed_data = copy.deepcopy(data)
-
         for column in data.iloc[:, 1:]:
             for i, syllable in enumerate(data[column]):
-
                 if resample == False:
                     length = len(syllable)
-
+                # continue if only one timeframe was recorded
+                #if len(syllable) < 2:
+                #    continue  
                 # new dataframe
                 preprocess = pd.DataFrame(columns=syllable.columns, index=range(length))
                 # array of current lenght
@@ -358,15 +396,50 @@ class ManageData():
                     preprocess[axis] = interpolator
                 # convert float to bool
                 preprocess['moving'] = preprocess['moving'].astype(bool)
-
-                if norm:
-                    preprocess.iloc[:, :4] = normalizer.fit_transform(preprocess.iloc[:, :4])
-
+                if norm_position:
+                    preprocess.iloc[:, :3] = normalizer.fit_transform(preprocess.iloc[:, :3])
+                if norm_time:
+                    preprocess.iloc[:, 3:4] = normalizer.fit_transform(preprocess.iloc[:, 3:4])
                 # substitute unsampled data by sampled data
                 preprocessed_data[column].iloc[i] = preprocess
-
+        preprocessed_data.to_pickle(str(object) + '_preprocessed_syllables')
         return preprocessed_data
 
+
+    def extract_values(self, data, as_array=False):
+
+
+        data = data.sort_values(by='syllable')
+        values = pd.DataFrame()
+        for row, index in enumerate(data.index):
+            # dropp all columns from dataframe and add a new column with those values
+            new_row = pd.DataFrame([{'subject': index[0],
+                                     'trial': index[1],
+                                     'holes':index[2],
+                                     'level_order': index[3],
+                                     'hand': index[4],
+                                     'syllable': index[5],
+                                     'features': []}])
+            features = []
+            for inner_df in data.iloc[row][1:]:
+                features.append(inner_df[['x','y','z','time']].values)
+            new_row['features'][0] = np.array(features).flatten()
+            values = pd.concat([values, new_row], ignore_index=True)
+
+        first_level_values = values['syllable']
+        factorized_values, unique_labels = pd.factorize(first_level_values)
+        #label_series = pd.Series(factorized_values, index=first_level_values).reset_index(drop=True).rename('syllable')
+        values = values.set_index(['subject','trial', 'holes', 'level_order', 'hand', 'syllable'])
+        values = values['features'].apply(pd.Series)
+        values.insert(0, 'time_interval', data['time_interval'])
+        values.insert(1,'labels',factorized_values)
+        #values = values.set_index(['hand'])['features'].apply(pd.Series)
+        # return values as array
+        if as_array:
+            return values.values.reshape(-1, len(values.columns))
+        # return values as DataFrame
+        else:
+            return values
 
 
 
