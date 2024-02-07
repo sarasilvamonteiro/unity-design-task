@@ -453,15 +453,16 @@ class ManageData():
         :param data: data to transform (raw or preprocessed).
         :param as_array: bool
         """
+        print('Extracting values as features...')
         values = pd.DataFrame(columns=np.unique(data.index))
 
         for syllable, subj, trial, holes, level_order, hand in np.unique(data.index):
             features = data.loc[syllable, subj, trial, holes, level_order, hand]['Timestamp'].values.reshape(-1, 1).T
             for column in data.columns[:-1]:
-                features = np.concatenate((data.loc[syllable, subj, trial, holes, level_order, hand]
-                                           [column].apply(pd.Series).values.reshape(-1, 1).T, features), axis=1)
+                features = np.concatenate((data.loc[syllable, subj, trial,
+                holes, level_order, hand][column].apply(pd.Series).values.reshape(-1, 1).T, features), axis=1)
             values[(syllable, subj, trial, holes, level_order, hand)] = features.flatten()
-
+        print('Done.')
         return values.T
 
 
