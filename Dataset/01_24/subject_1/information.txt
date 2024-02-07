@@ -1,0 +1,15 @@
+Trial Holes Flows TotalParticles(Create.cs) Hands
+1 1 1 5500 True
+2 1 1 5500 True
+3 1 1 5500 True
+4 1 1 5500 True
+5 1 1 5500 True
+6 1 1 5500 True
+7 1 1 5500 True
+1 2 1 5500 True
+2 2 1 5500 True
+3 2 1 5500 True
+4 2 1 5500 True
+5 2 1 5500 True
+6 2 1 5500 True
+7 2 1 5500 True
