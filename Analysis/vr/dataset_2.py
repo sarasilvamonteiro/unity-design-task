@@ -444,6 +444,25 @@ class ManageData():
         preprocessed_data.to_pickle(str(object) + '_preprocessed_syllables')
         return preprocessed_data
 
+    def extract_values(self, data, as_array=False):
+        """
+        Get x,y,z,time as features (each column has one element).
+        T: number of timestamps
+        Number of columns: number of joints/spheres/eyes * number of axis (x,y,z) * T + T
+        The last T columns are the timestamps.
+        :param data: data to transform (raw or preprocessed).
+        :param as_array: bool
+        """
+        values = pd.DataFrame(columns=np.unique(data.index))
+
+        for syllable, subj, trial, holes, level_order, hand in np.unique(data.index):
+            features = data.loc[syllable, subj, trial, holes, level_order, hand]['Timestamp'].values.reshape(-1, 1).T
+            for column in data.columns[:-1]:
+                features = np.concatenate((data.loc[syllable, subj, trial, holes, level_order, hand]
+                                           [column].apply(pd.Series).values.reshape(-1, 1).T, features), axis=1)
+            values[(syllable, subj, trial, holes, level_order, hand)] = features.flatten()
+
+        return values.T
 
 
 
