@@ -1,8 +1,6 @@
 import xml.etree.ElementTree as ET
-import copy
 import numpy as np
 import pandas as pd
-import os
 from sklearn import preprocessing
 from scipy.interpolate import interp1d
 
@@ -369,6 +367,7 @@ class ManageData():
         :param kind: str; type of interpolation, e.g. 'linear', 'quadratic', 'cubic'
         :return: DataFrame; resampled data
         """
+        print('Preprocessing...')
 
         if 'PalmPosition' in data.columns:
             object = 'hands'
@@ -383,17 +382,33 @@ class ManageData():
         # we need to copy the original data so that it doesn't change the original
         #preprocessed_data = copy.deepcopy(data)
         # new dataframe
-        preprocessed_data = pd.DataFrame()#, index=data.index.names)
+        preprocessed_data = pd.DataFrame(columns=data.columns)#, index=data.index.names)
         # get syllables index
         syllables = np.unique(data.index.get_level_values('syllable'))
+        multi_indices =  np.unique(data.index)
+        indices_data = pd.DataFrame()
 
         # iterate over each different syllable
         # when we select one syllable we get all the timeframes of that deformation
         # what we want is to normalize/upsample them
         for syllable in syllables:
-            # get joint/sphere info (column)
-            for column in data.columns:
-                for hand in data.loc[syllable].index.get_level_values('hand'):
+            for hand in np.unique(data.loc[syllable].index.get_level_values('hand')):
+
+                idx = list(preprocessed_data.index)
+                new_rows = list(map(str, range(len(preprocessed_data),
+                                               len(preprocessed_data) + length)))  # easier extensible than new_rows = ["4", "5"]
+                idx.extend(new_rows)
+                preprocessed_data = preprocessed_data.reindex(index=idx)
+                indices_data = indices_data.reindex(index=idx)
+
+                columns_dict = {'syllable': syllable, 'subject': multi_indices[0][1], 'trial': multi_indices[0][2],
+                                'holes': multi_indices[0][3], 'level_order': multi_indices[0][4], 'hand': hand}
+                for col_name, col_value in columns_dict.items():
+                    #print(col_name, col_value)
+                    indices_data.loc[new_rows,col_name] = col_value
+
+                # get joint/sphere info (column)
+                for column in data.columns:
                     # array of current lenght
                     sample_length = np.arange(0, len(data.loc[syllable, :, :, :, :, hand]), 1)
                     # array of resampled length
@@ -421,52 +436,14 @@ class ManageData():
                             interpolator = normalizer.fit_transform(interpolator.reshape(-1, 1))
                         upsampled_syllable = interpolator
 
-
-                    print(column, upsampled_syllable)
-
-                    #preprocess.loc[syllable, :, :, :, :, hand] = upsampled_syllable
                     # save upsampled column in new dataframe
-                    new_preprocess = pd.DataFrame([{column: upsampled_syllable}])#, index=list(np.unique(data.loc[syllable, :, :, :, :, hand]))*length)
-                    preprocessed_data = self.save_to_df(preprocessed_data, {column: upsampled_syllable}, hand=hand,
-                                                        shown=data.loc[syllable].index.get_level_values('level_order'),
-                                                        holes=data.loc[syllable].index.get_level_values('holes'),
-                                                        trial=data.loc[syllable].index.get_level_values('trial'),
-                                                        subj=data.loc[syllable].index.get_level_values('subject'),
-                                                        syllable=syllable, transpose=False)
+                    preprocessed_data.loc[new_rows, column] = np.array(upsampled_syllable).flatten()
 
+        preprocessed_data = pd.concat([indices_data, preprocessed_data], axis=1)
+        preprocessed_data = preprocessed_data.set_index(['syllable','subject','trial', 'holes', 'level_order', 'hand'])
+        preprocessed_data.to_pickle(str(object) + '_preprocessed_syllables')
+        return preprocessed_data
 
-
-        # continue .......
-        
-        #preprocessed_data = pd.concat([preprocessed_data, new_preprocess])
-
-
-        #preprocessed_data.to_pickle(str(object) + '_preprocessed_syllables')
-        return preprocessed_data.set_index(['syllable','subject','trial', 'holes', 'level_order', 'hand'])
-
-
-    def save_to_df(self, object_df, object_data, hand, shown, holes, trial, subj, syllable, transpose=True):
-        """
-        Select columns with position and time information.
-        Add columns with complementary information.
-        :param object_data: imported data (either from hand or surface)
-        :param object_df: Dataframe where syllable information is being saved.
-        :param hand: Which hand is being used.
-        :return: Resulting new row.
-        """
-
-        # current frame, first columns (position), last column (time)
-        new_syllable = pd.DataFrame(object_data)
-        if transpose:
-            new_syllable = new_syllable.T
-        # complementary information columns
-        columns_dict = {'hand': hand, 'level_order': shown, 'holes': holes,
-                        'trial': trial, 'subject': subj, 'syllable': syllable}
-        for col_name, col_value in columns_dict.items():
-            new_syllable.insert(0, col_name, col_value)
-        object_df = pd.concat([object_df, new_syllable], ignore_index=True)
-
-        return object_df
 
 
 
