@@ -449,6 +449,7 @@ class ManageData():
         print('Done.')
         return preprocessed_data
 
+    
     def extract_values(self, data, as_array=False):
         """
         Get x,y,z,time as features (each column has one element).
@@ -459,16 +460,17 @@ class ManageData():
         :param as_array: bool
         """
         print('Extracting values as features...')
-        values = pd.DataFrame(columns=np.unique(data.index))
+        values = pd.DataFrame(index=data.index)
+        values = values.loc[~values.index.duplicated(keep='first')]
 
         for syllable, subj, trial, holes, level_order, hand in np.unique(data.index):
             features = data.loc[syllable, subj, trial, holes, level_order, hand]['Timestamp'].values.reshape(-1, 1).T
             for column in data.columns[:-1]:
                 features = np.concatenate((data.loc[syllable, subj, trial,
                 holes, level_order, hand][column].apply(pd.Series).values.reshape(-1, 1).T, features), axis=1)
-            values[(syllable, subj, trial, holes, level_order, hand)] = features.flatten()
+            values.loc[(syllable, subj, trial, holes, level_order, hand), range(len(features.flatten()))] = features.flatten()
         print('Done.')
-        return values.T
+        return values
 
 
 
