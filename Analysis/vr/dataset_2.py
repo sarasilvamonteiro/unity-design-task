@@ -396,7 +396,7 @@ class ManageData():
 
                 idx = list(preprocessed_data.index)
                 new_rows = list(map(str, range(len(preprocessed_data),
-                                               len(preprocessed_data) + length)))  # easier extensible than new_rows = ["4", "5"]
+                                               len(preprocessed_data) + length)))
                 idx.extend(new_rows)
                 preprocessed_data = preprocessed_data.reindex(index=idx)
                 indices_data = indices_data.reindex(index=idx)
@@ -404,8 +404,9 @@ class ManageData():
                 columns_dict = {'syllable': syllable, 'subject': multi_indices[0][1], 'trial': multi_indices[0][2],
                                 'holes': multi_indices[0][3], 'level_order': multi_indices[0][4], 'hand': hand}
                 for col_name, col_value in columns_dict.items():
-                    #print(col_name, col_value)
                     indices_data.loc[new_rows,col_name] = col_value
+
+                indices_data = indices_data.astype({i:int for i in indices_data.columns[:-1]})
 
                 # get joint/sphere info (column)
                 for column in data.columns:
@@ -415,9 +416,9 @@ class ManageData():
                     new_length = np.arange(0, len(data.loc[syllable, :, :, :, :, hand]) - 1,
                                            (len(data.loc[syllable, :, :, :, :, hand]) - 1) / length)[:length]
                     # apply interpolation over each axis (x,y,z)
-                    upsampled_syllable = {}
                     # upsample joint/sphere positions (0 to length for each axis)
                     if column != 'Timestamp':
+                        positions = {}
                         for axis in ['x', 'y', 'z']:
                             if resample:
                                 interpolator = interp1d(sample_length,
@@ -425,7 +426,9 @@ class ManageData():
                                                     kind=kind)(new_length)
                             if norm_position:
                                 interpolator = normalizer.fit_transform(interpolator.reshape(-1, 1))
-                            upsampled_syllable[axis] = interpolator
+                            positions[axis] = interpolator
+                        upsampled_syllable = [{'x':float(x), 'y': float(y), 'z': float(z)}
+                                              for x,y,z in zip(positions['x'],positions['y'],positions['z'])]
                     # upsample Timestamps (0 to length)
                     if column == 'Timestamp':
                         if resample:
@@ -439,6 +442,7 @@ class ManageData():
                     # save upsampled column in new dataframe
                     preprocessed_data.loc[new_rows, column] = np.array(upsampled_syllable).flatten()
 
+        # add indices and save
         preprocessed_data = pd.concat([indices_data, preprocessed_data], axis=1)
         preprocessed_data = preprocessed_data.set_index(['syllable','subject','trial', 'holes', 'level_order', 'hand'])
         preprocessed_data.to_pickle(str(object) + '_preprocessed_syllables')
