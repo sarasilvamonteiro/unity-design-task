@@ -20,13 +20,13 @@ class ManageData():
     # - create automatic dataset of movements from that
 
 
-    def __init__(self):
+    def __init__(self, IOS=False, Windows=False):
 
         # i should create a file that saves the good subjects and the path of the data
         # the number of spheres and the number of hand joints
 
-        self.IOS = False
-        self.Windows = True
+        self.IOS = IOS
+        self.Windows = Windows
         if self.IOS:
             self.path = '/Users/smonteiro/Desktop/DesignMotorTask/Data'
         if self.Windows:
@@ -63,7 +63,7 @@ class ManageData():
         print(f'Importing general data...')
         if self.IOS:
             tree = ET.parse("" + self.path + "/subject_" + str(int(subj))
-                            + "/" + str(holes) + "_holes_1_flows_general_" + str(trial) + ".xml")
+                            + "/" + str(holes) + "_holes_1_flows_general_" + str(trial))
         if self.Windows:
             tree = ET.parse(self.path + "\subject_" + str(int(subj))
                             + "\\" + str(holes) + "_holes_1_flows_general_" + str(trial))
@@ -77,7 +77,7 @@ class ManageData():
         print(f'Importing {hand.lower()} hand data...')
         if self.IOS:
             tree = ET.parse(r"" + self.path + "/subject_" + str(int(subj)) + "/" +
-                             str(holes) + "_holes_1_flows_" + str(hand) + "_hand_" + str(trial) + ".xml")
+                             str(holes) + "_holes_1_flows_" + str(hand) + "_hand_" + str(trial))
         if self.Windows:
             tree = ET.parse(self.path + "\subject_" + str(int(subj))
                             + "\\" + str(holes) + "_holes_1_flows_" + str(hand) + "_hand_" + str(trial))
@@ -98,7 +98,7 @@ class ManageData():
 
         if self.IOS:
             tree = ET.parse(r"" + self.path + "/subject_" + str(int(subj))
-                            + "/" + str(holes) + "_holes_1_flows_surface_" + str(trial) + ".xml")
+                            + "/" + str(holes) + "_holes_1_flows_surface_" + str(trial))
         if self.Windows:
             tree = ET.parse(self.path + "\subject_" + str(int(subj)) + "\\" +
                             str(holes) + "_holes_1_flows_surface_" + str(trial))
@@ -113,7 +113,7 @@ class ManageData():
         print(f'Importing fluid data...')
         if self.IOS:
             tree = ET.parse(r"" + self.path + "/subject_" + str(int(subj))
-                            + "/" + str(holes) + "_holes_1_flows_fluid_" + str(trial) + ".xml")
+                            + "/" + str(holes) + "_holes_1_flows_fluid_" + str(trial))
         if self.Windows:
             tree = ET.parse(self.path + "\subject_" + str(int(subj))
                             + "\\" + str(holes) + "_holes_1_flows_fluid_" + str(trial))
@@ -442,6 +442,7 @@ class ManageData():
         preprocessed_data = pd.concat([indices_data, preprocessed_data], axis=1)
         preprocessed_data = preprocessed_data.set_index(['syllable','subject','trial', 'holes', 'level_order', 'hand'])
         preprocessed_data.to_pickle(str(object) + '_preprocessed_syllables')
+        print('Done.')
         return preprocessed_data
 
     def extract_values(self, data, as_array=False):
