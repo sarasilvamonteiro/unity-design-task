@@ -45,13 +45,13 @@ class ManageData():
                              'CLFront', 'CRFront']
         self.cmap = np.load("surface_colormap.npy")
 
-    def section_cmap(self, LCR, BMF):
+    def section_cmap(self, LCR, BMF, length):
         """ Indexes of 2D color map (surface top view). """
 
         # left, center, right
-        LCR_dict = {'L': 0, 'CL': 25, 'C': 50, 'CR': 75, 'R': 99}
+        LCR_dict = {'L': 0, 'CL': length/4, 'C': length/2, 'CR': 3*length/4, 'R': length-1}
         # back, middle, front
-        BMF_dict = {'B': 0, 'M': 50, 'F': 99}
+        BMF_dict = {'B': 0, 'M': length/2, 'F': length-1}
         section_cmap = self.cmap[BMF_dict[BMF], LCR_dict[LCR]]
 
         return section_cmap
@@ -94,7 +94,7 @@ class ManageData():
             subj = self.subjects[0]
             holes = 1
             trial = 1
-            frame = 0
+            frame = slice(1)
 
         if self.IOS:
             tree = ET.parse(r"" + self.path + "/subject_" + str(int(subj))
@@ -105,7 +105,7 @@ class ManageData():
         root = tree.getroot()
 
         if toDataFrame:
-            return self.XMLtoDataFrame(root)
+            return self.XMLtoDataFrame(root[frame])
         else:
             return root[frame]
 
@@ -160,6 +160,35 @@ class ManageData():
 
         return df
     #####################
+
+    ### Has all the sections and IDs ###
+    def surface_section(self):
+        """ Check to which surface region does sphere ID belong. """
+        # import initial positions
+        initial_positions = self.import_surface(toDataFrame=True)
+        normalizer = preprocessing.MinMaxScaler()
+        x_norm = normalizer.fit_transform(np.array(initial_positions.T[0][:-3].apply(lambda x: x['x'])).reshape(-1, 1))
+        z_norm = normalizer.fit_transform(np.array(initial_positions.T[0][:-3].apply(lambda x: x['z'])).reshape(-1, 1))
+
+        def map_to_section(position, section_dict):
+            for key in section_dict:
+                if key[0] <= position <= key[-1]:
+                    return section_dict[key]
+
+        LCR_dict = {(0, 0.2): 'L', (0.2, 0.4): 'CL', (0.4, 0.6): 'C', (0.6, 0.8): 'CR', (0.8, 1): 'R'}
+        BMF_dict = {(0, 1/3): 'F', (1/3, 2/3): 'M', (2/3, 1): 'B'}
+
+        id_to_section = {}; section_to_id = {}
+
+        for i, id in enumerate(initial_positions.columns[:-3]):
+            id_to_section[int(id[6:])] = []
+            # check x axis
+            id_to_section[int(id[6:])].append(map_to_section(x_norm[i],LCR_dict))
+            # check z axis
+            id_to_section[int(id[6:])].append(map_to_section(z_norm[i],BMF_dict))
+
+        return id_to_section
+
 
     def import_spheres_to_array(self, subj=None, trial=None, holes=None, frame=slice(None)):
 
@@ -508,6 +537,7 @@ class ManageData():
 
 # to do:
 # get derivative of movement
+# get sphere section.....
 # naive bayes
 # remove time in umap
 ##### get region of syllable and if its up or down
