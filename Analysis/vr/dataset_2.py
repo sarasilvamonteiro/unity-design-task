@@ -237,6 +237,8 @@ class ManageData():
         eye_syllables_df = pd.DataFrame()
         touched_spheres_df = pd.DataFrame()
 
+        section_dict = self.surface_section()
+
         def save_to_syllable_df(object_df, object_data, hand, transpose=True):
             """
             Select columns with position and time information.
@@ -261,21 +263,30 @@ class ManageData():
             return object_df
 
 
-        def get_direction():
+        def get_section_direction():
 
             for hand in ['Left', 'Right']:
-                if syllable_id-1 in hand_syllables_df['id'].values and hand in hand_syllables_df['hand'].values:
+                if ((hand_syllables_df['id'] == syllable_id-1) & (hand_syllables_df['hand'] == hand)).any():
                     # get y palm trajectory of current syllable
-                    data = hand_syllables_df[(hand_syllables_df['id'] == syllable_id-1) &
-                                             (hand_syllables_df['hand'] == hand)]
-                    y = data['PalmPosition'].apply(lambda x: x['y'])
+                    y = hand_syllables_df[(hand_syllables_df['id'] == syllable_id-1) &
+                                             (hand_syllables_df['hand'] == hand)]['PalmPosition'].apply(lambda x: x['y'])
+                    sphereIDs = touched_spheres_df[(touched_spheres_df['id'] == syllable_id - 1) &
+                                              (touched_spheres_df['hand'] == hand)]['SphereID']
+
                     # get direction of movement
                     direction = "Up" if np.mean(np.diff(y.astype(float))) > 0 else "Down"
+                    # get surface section
+                    print(syllable_id-1, hand)
+                    print(y)
+                    print(sphereIDs)
+
+                    lcr, bmf = section_dict[int(sphereIDs.value_counts().idxmax())]
+                    print(lcr, bmf, direction)
                     # add values to all dfs
-                    surface_syllables_df.loc[y.index, 'syllable'] = direction
-                    hand_syllables_df.loc[y.index, 'syllable'] = direction
-                    eye_syllables_df.loc[y.index, 'syllable'] = direction
-                    touched_spheres_df.loc[y.index, 'syllable'] = direction
+                    surface_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
+                    hand_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
+                    eye_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
+                    touched_spheres_df.loc[sphereIDs.index, 'syllable'] = lcr + bmf + direction
 
 
 
@@ -368,7 +379,7 @@ class ManageData():
                     if not touch:
                         touch = False
                         if syllable_id > 1:
-                            get_direction()
+                            get_section_direction()
                         syllable_id = last_syllable_id + 1
 
 
