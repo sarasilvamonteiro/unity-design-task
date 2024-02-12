@@ -455,8 +455,7 @@ class ManageData():
         # new dataframe
         preprocessed_data = pd.DataFrame(columns=data.columns)  # , index=data.index.names)
         # get syllables index
-        syllable_ids = np.unique(data.index.get_level_values('id'))
-        multi_indices = np.unique(data.index)
+        multi_indices = data.index.unique()
         indices_data = pd.DataFrame()
 
 
@@ -550,7 +549,7 @@ class ManageData():
         values = pd.DataFrame(index=data.index)
         values = values.loc[~values.index.duplicated(keep='first')]
 
-        for syllable_id, syllable, subj, trial, holes, level_order, hand in np.unique(data.index):
+        for syllable_id, syllable, subj, trial, holes, level_order, hand in data.index.unique():
             features = data.loc[syllable_id, syllable, subj, trial, holes, level_order, hand]['Timestamp'].values.reshape(-1, 1).T
             for column in data.columns[:-1]:
                 features = np.concatenate((data.loc[syllable_id, syllable, subj, trial,
