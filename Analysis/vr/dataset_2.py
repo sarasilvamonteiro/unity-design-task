@@ -33,7 +33,7 @@ class ManageData():
             self.path = r"C:\Users\Sara\Desktop\DesignMotorTask\Data"
         # new subjects
         #self.subjects = np.arange(1,16,1)
-        self.subjects = [1]
+        self.subjects = [1,2,3,4,5]
         # old subjects
         #self.subjects = np.array([5, 8, 9, 11, 12, 13, 14, 15, 16, 17])
         self.nr_subjects = len(self.subjects)
@@ -49,9 +49,13 @@ class ManageData():
         """ Indexes of 2D color map (surface top view). """
 
         # left, center, right
-        LCR_dict = {'L': 0, 'CL': length/4, 'C': length/2, 'CR': 3*length/4, 'R': length-1}
+        LCR_dict = {'L': 0, 'CL': int(length/4), 'C': int(length/2), 'CR': int(3*length/4), 'R': int(length-1)}
         # back, middle, front
-        BMF_dict = {'B': 0, 'M': length/2, 'F': length-1}
+        BMF_dict = {'B': 0, 'M': int(length/2), 'F': int(length-1)}
+
+        print(BMF_dict[BMF])
+        print(LCR_dict[LCR])
+
         section_cmap = self.cmap[BMF_dict[BMF], LCR_dict[LCR]]
 
         return section_cmap
@@ -276,12 +280,7 @@ class ManageData():
                     # get direction of movement
                     direction = "Up" if np.mean(np.diff(y.astype(float))) > 0 else "Down"
                     # get surface section
-                    print(syllable_id-1, hand)
-                    print(y)
-                    print(sphereIDs)
-
                     lcr, bmf = section_dict[int(sphereIDs.value_counts().idxmax())]
-                    print(lcr, bmf, direction)
                     # add values to all dfs
                     surface_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
                     hand_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
