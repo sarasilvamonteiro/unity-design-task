@@ -359,7 +359,10 @@ class ManageData():
 
                     ### save touched spheres ###
                     if L_touched_spheres.iloc[frame] != None:
-                        spheres_list = L_touched_spheres.iloc[frame].split(',')
+                        try:
+                            spheres_list = L_touched_spheres.iloc[frame].split(',')
+                        except: # in case there is only one sphere...
+                            spheres_list = list(L_touched_spheres.iloc[frame])
                         for sphere in spheres_list:
                             touched_spheres_df = save_to_syllable_df(touched_spheres_df,
                                                                      [{'SphereID': sphere,
