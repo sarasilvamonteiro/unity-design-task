@@ -33,7 +33,7 @@ class ManageData():
             self.path = r"C:\Users\Sara\Desktop\DesignMotorTask\Data"
         # new subjects
         #self.subjects = np.arange(1,16,1)
-        self.subjects = [1,2,3,4,5]
+        self.subjects = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
         # old subjects
         #self.subjects = np.array([5, 8, 9, 11, 12, 13, 14, 15, 16, 17])
         self.nr_subjects = len(self.subjects)
@@ -43,7 +43,7 @@ class ManageData():
                              'RFrontUp', 'RMidUp', 'RFrontDown',
                              'CFrontDown', 'LFrontDown', 'CBackUp',
                              'CLFront', 'CRFront']
-        self.cmap = np.load("surface_colormap.npy")
+        self.cmap = np.load("jan_24\surface_colormap.npy")
 
     def section_cmap(self, LCR, BMF, length):
         """ Indexes of 2D color map (surface top view). """
@@ -52,9 +52,6 @@ class ManageData():
         LCR_dict = {'L': 0, 'CL': int(length/4), 'C': int(length/2), 'CR': int(3*length/4), 'R': int(length-1)}
         # back, middle, front
         BMF_dict = {'B': 0, 'M': int(length/2), 'F': int(length-1)}
-
-        print(BMF_dict[BMF])
-        print(LCR_dict[LCR])
 
         section_cmap = self.cmap[BMF_dict[BMF], LCR_dict[LCR]]
 
@@ -294,8 +291,8 @@ class ManageData():
             shown = 0
             trial_info = self.load_info(subj)
             last_holes = trial_info['Holes'][0] # first level shown (1 or 2 holes)
-            for [trial, holes] in [[1, 1]]:
-            #for [trial, holes] in trial_info.apply(lambda row: [row['Trial'], row['Holes']], axis=1):
+            #for [trial, holes] in [[1, 1]]:
+            for [trial, holes] in trial_info.apply(lambda row: [row['Trial'], row['Holes']], axis=1):
                 # check level order
                 print(f'Getting syllables for subject {subj}, trial {trial}, holes {holes}:')
                 if holes != last_holes:
@@ -385,8 +382,8 @@ class ManageData():
 
         # save syllables
         surface_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('surface_syllables')
-        hand_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('hand_syllables')
-        eye_syllables_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('eye_syllables')
+        hand_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('hands_syllables')
+        eye_syllables_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('eyes_syllables')
         touched_spheres_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('sphereID_syllables')
         print('Done.')
         # ..............
@@ -402,6 +399,13 @@ class ManageData():
         :param object: str, 'hands', 'surface' or 'eyes'
         """
         object_syllables = pd.read_pickle(object + '_syllables')
+        return object_syllables
+
+    def load_features(self, object):
+        """
+        :param object: str, 'hands', 'surface' or 'eyes'
+        """
+        object_syllables = pd.read_pickle(object + '_features')
         return object_syllables
 
     def load_preprocessed_syllables(self, object):
@@ -526,6 +530,17 @@ class ManageData():
         :param as_array: bool
         """
         print('Extracting values as features...')
+
+        if 'PalmPosition' in data.columns:
+            object = 'hands'
+            print(object)
+        if 'Sphere2000' in data.columns:
+            object = 'surface'
+            print(object)
+        if 'AgentLookingAt' in data.columns:
+            object = 'eye'
+            print(object)
+
         values = pd.DataFrame(index=data.index)
         values = values.loc[~values.index.duplicated(keep='first')]
 
@@ -535,6 +550,7 @@ class ManageData():
                 features = np.concatenate((data.loc[syllable_id, syllable, subj, trial,
                 holes, level_order, hand][column].apply(pd.Series).values.reshape(-1, 1).T, features), axis=1)
             values.loc[(syllable_id, syllable, subj, trial, holes, level_order, hand), range(len(features.flatten()))] = features.flatten()
+        values.to_pickle(str(object) + '_features')
         print('Done.')
         return values
 
