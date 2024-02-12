@@ -2,7 +2,7 @@ import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import umap
 import pandas as pd
-from jan24.dataset_2 import *
+from jan_24.dataset_2 import *
 
 data_manager = ManageData(IOS=True)
 
@@ -100,18 +100,18 @@ def draw_umap_by_trial(umap_values, hand, holes, trial='all', n_neighbors=15, mi
               title=''):  # 'euclidean'
 
     # get syllables in data (sorted by^'____________')
-    data_syllables = umap_values.index.get_level_values('syllable')
+    #data_syllables = umap_values.index.get_level_values('syllable')
     # get int and str labels for each unique syllable
-    int_labels , str_labels = pd.factorize(data_syllables.unique())
+    #int_labels , str_labels = pd.factorize(data_syllables.unique())
     # create a dictionary between them
-    labels_dict =  dict(zip(str_labels, int_labels))
-    print(labels_dict)
+    #labels_dict =  dict(zip(str_labels, int_labels))
+    #print(labels_dict)
 
     suptitle = f'Hand: {hand.lower()} Trial: {str(trial)} Holes: {str(holes)}'#  (sorted by {sort_by})'
     title = f'(neigh:{str(n_neighbors)} min-dist:{str(min_dist)})'
 
     if trial == 'all':
-        trials = range(7)
+        trials = np.arange(1,7,1)
     else:
         trials = [trial]
 
@@ -127,14 +127,14 @@ def draw_umap_by_trial(umap_values, hand, holes, trial='all', n_neighbors=15, mi
         random_state=2
     )
 
-    subj_color = ['black', 'silver']
+    subj_color = ['black', 'silver'] # one color per subject
 
     for trial in trials:
         s = -1
-        for subj in [12,14]:
+        for subj in [1,2]:
             s += 1
             try:
-                trial_data = umap_values.loc[subj, trial, holes, :, hand, :]
+                trial_data = umap_values.loc[:, :, subj, trial, holes, :, hand]
             except:
                 continue
 
@@ -143,7 +143,7 @@ def draw_umap_by_trial(umap_values, hand, holes, trial='all', n_neighbors=15, mi
                 continue
 
             # get from the label dictionary the int_label for the syllables in this trial
-            trial_labels = [labels_dict[key] for key in trial_data.index.get_level_values('syllable')]
+            #trial_labels = [labels_dict[key] for key in trial_data.index.get_level_values('syllable')]
 
             trial_syllables = trial_data.index.get_level_values('syllable')
             section_cmap = []
@@ -152,16 +152,16 @@ def draw_umap_by_trial(umap_values, hand, holes, trial='all', n_neighbors=15, mi
             for idx, syllable in enumerate(trial_syllables):
                 if syllable[1] in ['F', 'M', 'B']:
                     LCR = syllable[0]
-                    print(LCR)
+                    #print(LCR)
                     BMF = syllable[1]
-                    print(BMF)
+                    #print(BMF)
                 if syllable[1] not in ['F', 'M', 'B']:
                     LCR = syllable[0:2]
-                    print(LCR)
+                    #print(LCR)
                     BMF = syllable[2]
-                    print(BMF)
+                    #print(BMF)
 
-                section_cmap.append(data_manager.section_cmap(LCR, BMF))
+                section_cmap.append(data_manager.section_cmap(LCR, BMF, length=100))
 
                 if syllable[-2:] == 'Up':
                     up.append(idx)
@@ -172,10 +172,13 @@ def draw_umap_by_trial(umap_values, hand, holes, trial='all', n_neighbors=15, mi
             print(np.min((n_neighbors, len(trial_data)-1)))
 
 
-            u = fit.fit_transform(trial_data.drop(['time_interval', 'labels'], axis=1))
+            print(trial_data)
+
+            u = fit.fit_transform(trial_data)
             # normalize u:
             normalizer = preprocessing.MinMaxScaler()
             u = normalizer.fit_transform(u)
+            print(u.shape)
 
             if n_components == 2:
                 # plot UMAP
