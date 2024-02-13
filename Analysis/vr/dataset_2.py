@@ -33,7 +33,7 @@ class ManageData():
             self.path = r"C:\Users\Sara\Desktop\DesignMotorTask\Data"
         # new subjects
         #self.subjects = np.arange(1,16,1)
-        self.subjects = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+        self.subjects = [1,2,3,4,5]
         # old subjects
         #self.subjects = np.array([5, 8, 9, 11, 12, 13, 14, 15, 16, 17])
         self.nr_subjects = len(self.subjects)
@@ -43,7 +43,7 @@ class ManageData():
                              'RFrontUp', 'RMidUp', 'RFrontDown',
                              'CFrontDown', 'LFrontDown', 'CBackUp',
                              'CLFront', 'CRFront']
-        self.cmap = np.load("jan_24\surface_colormap.npy")
+        self.cmap = np.load("surface_colormap.npy")
 
     def section_cmap(self, LCR, BMF, length):
         """ Indexes of 2D color map (surface top view). """
@@ -52,6 +52,9 @@ class ManageData():
         LCR_dict = {'L': 0, 'CL': int(length/4), 'C': int(length/2), 'CR': int(3*length/4), 'R': int(length-1)}
         # back, middle, front
         BMF_dict = {'B': 0, 'M': int(length/2), 'F': int(length-1)}
+
+        print(BMF_dict[BMF])
+        print(LCR_dict[LCR])
 
         section_cmap = self.cmap[BMF_dict[BMF], LCR_dict[LCR]]
 
@@ -291,8 +294,8 @@ class ManageData():
             shown = 0
             trial_info = self.load_info(subj)
             last_holes = trial_info['Holes'][0] # first level shown (1 or 2 holes)
-            #for [trial, holes] in [[1, 1]]:
-            for [trial, holes] in trial_info.apply(lambda row: [row['Trial'], row['Holes']], axis=1):
+            for [trial, holes] in [[1, 1]]:
+            #for [trial, holes] in trial_info.apply(lambda row: [row['Trial'], row['Holes']], axis=1):
                 # check level order
                 print(f'Getting syllables for subject {subj}, trial {trial}, holes {holes}:')
                 if holes != last_holes:
@@ -359,20 +362,14 @@ class ManageData():
 
                     ### save touched spheres ###
                     if L_touched_spheres.iloc[frame] != None:
-                        try:
-                            spheres_list = L_touched_spheres.iloc[frame].split(',')
-                        except: # in case there is only one sphere...
-                            spheres_list = [L_touched_spheres.iloc[frame]]
+                        spheres_list = L_touched_spheres.iloc[frame].split(',')
                         for sphere in spheres_list:
                             touched_spheres_df = save_to_syllable_df(touched_spheres_df,
                                                                      [{'SphereID': sphere,
                                                                        'Timestamp': general_data['Timestamp'][frame]}],
                                                                      hand='Left', transpose=False)
                     if R_touched_spheres.iloc[frame] != None:
-                        try:
-                            spheres_list = R_touched_spheres.iloc[frame].split(',')
-                        except: # in case there is only one sphere...
-                            spheres_list = [R_touched_spheres.iloc[frame]]
+                        spheres_list = R_touched_spheres.iloc[frame].split(',')
                         for sphere in spheres_list:
                             touched_spheres_df = save_to_syllable_df(touched_spheres_df,
                                                                      [{'SphereID': sphere,
@@ -388,8 +385,8 @@ class ManageData():
 
         # save syllables
         surface_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('surface_syllables')
-        hand_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('hands_syllables')
-        eye_syllables_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('eyes_syllables')
+        hand_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('hand_syllables')
+        eye_syllables_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('eye_syllables')
         touched_spheres_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('sphereID_syllables')
         print('Done.')
         # ..............
@@ -405,13 +402,6 @@ class ManageData():
         :param object: str, 'hands', 'surface' or 'eyes'
         """
         object_syllables = pd.read_pickle(object + '_syllables')
-        return object_syllables
-
-    def load_features(self, object):
-        """
-        :param object: str, 'hands', 'surface' or 'eyes'
-        """
-        object_syllables = pd.read_pickle(object + '_features')
         return object_syllables
 
     def load_preprocessed_syllables(self, object):
@@ -463,10 +453,8 @@ class ManageData():
         # when we select one syllable we get all the timeframes of that deformation
         # what we want is to normalize/upsample them
 
-        for multi_idx in multi_indices:
+        for syllable_id, syllable, subject, trial, holes, level_order, hand in multi_indices:
 
-            syllable_id = multi_idx[0]
-            hand = multi_idx[-1]
             idx = list(preprocessed_data.index)
             new_rows = list(map(str, range(len(preprocessed_data),
                                            len(preprocessed_data) + length)))
@@ -474,8 +462,8 @@ class ManageData():
             preprocessed_data = preprocessed_data.reindex(index=idx)
             indices_data = indices_data.reindex(index=idx)
 
-            columns_dict = {'id': syllable_id, 'syllable':multi_idx[1], 'subject': multi_idx[2], 'trial':multi_idx[3],
-                            'holes': multi_idx[4], 'level_order': multi_idx[5], 'hand': hand}
+            columns_dict = {'id': syllable_id, 'syllable':syllable, 'subject': subject, 'trial': trial,
+                            'holes': holes, 'level_order': level_order, 'hand': hand}
             for col_name, col_value in columns_dict.items():
                 indices_data.loc[new_rows, col_name] = col_value
 
@@ -484,10 +472,10 @@ class ManageData():
             # get joint/sphere info (column)
             for column in data.columns:
                 # array of current lenght
-                sample_length = np.arange(0, len(data.loc[syllable_id, :, :, :, :, :, hand]), 1)
+                sample_length = np.arange(0, len(data.loc[syllable_id, :, subject, trial, holes, level_order, hand]), 1)
                 # array of resampled length
-                new_length = np.arange(0, len(data.loc[syllable_id, :, :, :, :, :, hand]) - 1,
-                                       (len(data.loc[syllable_id, :, :, :, :, :, hand]) - 1) / length)[:length]
+                new_length = np.arange(0, len(data.loc[syllable_id, :, subject, trial, holes, level_order, hand]) - 1,
+                                       (len(data.loc[syllable_id, :, subject, trial, holes, level_order, hand]) - 1) / length)[:length]
                 # apply interpolation over each axis (x,y,z)
                 # upsample joint/sphere positions (0 to length for each axis)
                 if column != 'Timestamp':
@@ -495,7 +483,7 @@ class ManageData():
                     for axis in ['x', 'y', 'z']:
                         if resample:
                             interpolator = interp1d(sample_length,
-                                                    data.loc[syllable_id, :, :, :, :, :, hand][column].apply(
+                                                    data.loc[syllable_id, :, subject, trial, holes, level_order, hand][column].apply(
                                                         lambda x: x[axis]),
                                                     kind=kind)(new_length)
                         if norm_position:
@@ -507,7 +495,7 @@ class ManageData():
                 if column == 'Timestamp':
                     if resample:
                         interpolator = interp1d(sample_length,
-                                                data.loc[syllable_id, :, :, :, :, :, hand][column],
+                                                data.loc[syllable_id, :, subject, trial, holes, level_order, hand][column],
                                                 kind=kind)(new_length)
                     if norm_time:
                         interpolator = normalizer.fit_transform(interpolator.reshape(-1, 1))
@@ -535,25 +523,15 @@ class ManageData():
         :param as_array: bool
         """
         print('Extracting values as features...')
-
-        if 'PalmPosition' in data.columns:
-            object = 'hands'
-            print(object)
-        if 'Sphere2000' in data.columns:
-            object = 'surface'
-            print(object)
-        if 'AgentLookingAt' in data.columns:
-            object = 'eye'
-            print(object)
-
+        data = data.sort_index()
         values = pd.DataFrame(index=data.index)
         values = values.loc[~values.index.duplicated(keep='first')]
 
         for syllable_id, syllable, subj, trial, holes, level_order, hand in data.index.unique():
-            features = data.loc[syllable_id, syllable, subj, trial, holes, level_order, hand]['Timestamp'].values.reshape(-1, 1).T
+            features = data.loc[(syllable_id, syllable, subj, trial, holes, level_order, hand), 'Timestamp'].values.reshape(-1, 1).T
             for column in data.columns[:-1]:
-                features = np.concatenate((data.loc[syllable_id, syllable, subj, trial,
-                holes, level_order, hand][column].apply(pd.Series).values.reshape(-1, 1).T, features), axis=1)
+                features = np.concatenate((data.loc[(syllable_id, syllable, subj, trial,
+                holes, level_order, hand), column].apply(pd.Series).values.reshape(-1, 1).T, features), axis=1)
             values.loc[(syllable_id, syllable, subj, trial, holes, level_order, hand), range(len(features.flatten()))] = features.flatten()
         values.to_pickle(str(object) + '_features')
         print('Done.')
