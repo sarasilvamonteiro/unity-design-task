@@ -32,8 +32,7 @@ class ManageData():
         if self.Windows:
             self.path = r"C:\Users\Sara\Desktop\DesignMotorTask\Data"
         # new subjects
-        #self.subjects = np.arange(1,16,1)
-        self.subjects = [1,2,3,4,5]
+        self.subjects = np.arange(1,16,1)
         # old subjects
         #self.subjects = np.array([5, 8, 9, 11, 12, 13, 14, 15, 16, 17])
         self.nr_subjects = len(self.subjects)
@@ -43,7 +42,7 @@ class ManageData():
                              'RFrontUp', 'RMidUp', 'RFrontDown',
                              'CFrontDown', 'LFrontDown', 'CBackUp',
                              'CLFront', 'CRFront']
-        self.cmap = np.load("surface_colormap.npy")
+        self.cmap = np.load("jan_24\surface_colormap.npy")
 
     def section_cmap(self, LCR, BMF, length):
         """ Indexes of 2D color map (surface top view). """
@@ -168,8 +167,10 @@ class ManageData():
         # import initial positions
         initial_positions = self.import_surface(toDataFrame=True)
         normalizer = preprocessing.MinMaxScaler()
-        x_norm = normalizer.fit_transform(np.array(initial_positions.T[0][:-3].apply(lambda x: x['x'])).reshape(-1, 1))
-        z_norm = normalizer.fit_transform(np.array(initial_positions.T[0][:-3].apply(lambda x: x['z'])).reshape(-1, 1))
+        x_norm = normalizer.fit_transform(
+            np.array(initial_positions.T[0][:-3].apply(lambda x: x['x'])).reshape(-1, 1))
+        z_norm = normalizer.fit_transform(
+            np.array(initial_positions.T[0][:-3].apply(lambda x: x['z'])).reshape(-1, 1))
 
         def map_to_section(position, section_dict):
             for key in section_dict:
@@ -177,16 +178,17 @@ class ManageData():
                     return section_dict[key]
 
         LCR_dict = {(0, 0.2): 'L', (0.2, 0.4): 'CL', (0.4, 0.6): 'C', (0.6, 0.8): 'CR', (0.8, 1): 'R'}
-        BMF_dict = {(0, 1/3): 'F', (1/3, 2/3): 'M', (2/3, 1): 'B'}
+        BMF_dict = {(0, 1 / 3): 'F', (1 / 3, 2 / 3): 'M', (2 / 3, 1): 'B'}
 
-        id_to_section = {}; section_to_id = {}
+        id_to_section = {};
+        section_to_id = {}
 
         for i, id in enumerate(initial_positions.columns[:-3]):
             id_to_section[int(id[6:])] = []
             # check x axis
-            id_to_section[int(id[6:])].append(map_to_section(x_norm[i],LCR_dict))
+            id_to_section[int(id[6:])].append(map_to_section(x_norm[i], LCR_dict))
             # check z axis
-            id_to_section[int(id[6:])].append(map_to_section(z_norm[i],BMF_dict))
+            id_to_section[int(id[6:])].append(map_to_section(z_norm[i], BMF_dict))
 
         return id_to_section
 
@@ -267,17 +269,23 @@ class ManageData():
         def get_section_direction():
 
             for hand in ['Left', 'Right']:
+                print(f'syllable: {syllable_id-1}, hand: {hand.lower()}')
                 if ((hand_syllables_df['id'] == syllable_id-1) & (hand_syllables_df['hand'] == hand)).any():
-                    # get y palm trajectory of current syllable
-                    y = hand_syllables_df[(hand_syllables_df['id'] == syllable_id-1) &
-                                             (hand_syllables_df['hand'] == hand)]['PalmPosition'].apply(lambda x: x['y'])
-                    sphereIDs = touched_spheres_df[(touched_spheres_df['id'] == syllable_id - 1) &
-                                              (touched_spheres_df['hand'] == hand)]['SphereID']
 
+
+                    sphereIDs = touched_spheres_df[(touched_spheres_df['id'] == syllable_id - 1) &
+                                                   (touched_spheres_df['hand'] == hand)]['SphereID']
+                    main_sphere = int(sphereIDs.value_counts().idxmax())
+                    print(main_sphere)
+                    # get y trajectory of current syllable (use main touched sphere)
+                    y = surface_syllables_df[(surface_syllables_df['id'] == syllable_id-1) &
+                                             (surface_syllables_df['hand'] == hand)][f'Sphere{main_sphere}'].apply(lambda x: x['y'])
+                    #y = hand_syllables_df[(hand_syllables_df['id'] == syllable_id - 1) &
+                    #                      (hand_syllables_df['hand'] == hand)]['PalmPosition'].apply(lambda x: x['y'])
                     # get direction of movement
                     direction = "Up" if np.mean(np.diff(y.astype(float))) > 0 else "Down"
                     # get surface section
-                    lcr, bmf = section_dict[int(sphereIDs.value_counts().idxmax())]
+                    lcr, bmf = section_dict[main_sphere]
                     # add values to all dfs
                     surface_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
                     hand_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
@@ -291,8 +299,8 @@ class ManageData():
             shown = 0
             trial_info = self.load_info(subj)
             last_holes = trial_info['Holes'][0] # first level shown (1 or 2 holes)
-            for [trial, holes] in [[1, 1]]:
-            #for [trial, holes] in trial_info.apply(lambda row: [row['Trial'], row['Holes']], axis=1):
+            #for [trial, holes] in [[1, 1]]:
+            for [trial, holes] in trial_info.apply(lambda row: [row['Trial'], row['Holes']], axis=1):
                 # check level order
                 print(f'Getting syllables for subject {subj}, trial {trial}, holes {holes}:')
                 if holes != last_holes:
@@ -359,14 +367,20 @@ class ManageData():
 
                     ### save touched spheres ###
                     if L_touched_spheres.iloc[frame] != None:
-                        spheres_list = L_touched_spheres.iloc[frame].split(',')
+                        try:
+                            spheres_list = L_touched_spheres.iloc[frame].split(',')
+                        except:
+                            spheres_list = [L_touched_spheres.iloc[frame]]
                         for sphere in spheres_list:
                             touched_spheres_df = save_to_syllable_df(touched_spheres_df,
                                                                      [{'SphereID': sphere,
                                                                        'Timestamp': general_data['Timestamp'][frame]}],
                                                                      hand='Left', transpose=False)
                     if R_touched_spheres.iloc[frame] != None:
-                        spheres_list = R_touched_spheres.iloc[frame].split(',')
+                        try:
+                            spheres_list = R_touched_spheres.iloc[frame].split(',')
+                        except:
+                            spheres_list = [R_touched_spheres.iloc[frame]]
                         for sphere in spheres_list:
                             touched_spheres_df = save_to_syllable_df(touched_spheres_df,
                                                                      [{'SphereID': sphere,
@@ -541,10 +555,8 @@ class ManageData():
         print(data.index)
 
         data = data.sort_index()
-        print(data.index)
         values = pd.DataFrame(index=data.index)
         values = values.loc[~values.index.duplicated(keep='first')]
-        print(values.index)
 
         for syllable_id, syllable, subj, trial, holes, level_order, hand in data.index.unique():
             print(syllable_id, syllable)
@@ -570,24 +582,3 @@ class ManageData():
 # naive bayes
 # remove time in umap
 ##### get region of syllable and if its up or down
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
