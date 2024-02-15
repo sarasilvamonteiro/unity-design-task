@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Clayxels;
 
 public class SurfaceInteractionPhysics : MonoBehaviour
 {
@@ -26,18 +27,23 @@ public class SurfaceInteractionPhysics : MonoBehaviour
 
 
         // 1.
-        clayContainer = GameObject.FindGameObjectWithTag("GameController").GetComponent<Create>().clayContainer;
+        clayContainer = gameObject.GetComponentInParent<ClayContainer>();
         maxDistance = 0.8f * gameObject.transform.localScale.x * clayContainer.transform.localScale.x;
+        //clayContainer.GetComponent<ClayContainer>().setRenderMode(1);
+        //clayContainer.setMaxSolidsPerVoxel(2048);
 
 
         // 2. 
-        foreach (SphereCollider sphereCollider in clayContainer.GetComponentsInChildren<SphereCollider>())
+        foreach (Rigidbody sphere in clayContainer.GetComponentsInChildren<Rigidbody>())
         {
-            Physics.IgnoreCollision(sphereCollider, gameObject.GetComponent<SphereCollider>());
+            Physics.IgnoreCollision(sphere.GetComponent<SphereCollider>(), gameObject.GetComponent<SphereCollider>());
         }
 
-        Physics.IgnoreCollision(GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<CapsuleCollider>(), gameObject.GetComponent<SphereCollider>()); 
-
+        if (GameObject.FindGameObjectWithTag("Player") != null)
+        {
+            Physics.IgnoreCollision(GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<CapsuleCollider>(), gameObject.GetComponent<SphereCollider>());
+        }
+        
 
         // 3.
         int target_idx = 0;
@@ -73,7 +79,7 @@ public class SurfaceInteractionPhysics : MonoBehaviour
             targetJoint.yMotion = ConfigurableJointMotion.Limited;
             targetJoint.zMotion = ConfigurableJointMotion.Limited;
             SoftJointLimit linearLimit = new SoftJointLimit();
-            linearLimit.limit = 0.72f * gameObject.transform.localScale.x;
+            linearLimit.limit = 0.72f * clayContainer.transform.localScale.x * gameObject.transform.localScale.x;
             targetJoint.linearLimit = linearLimit;
             targetJoint.autoConfigureConnectedAnchor = false;
             targetJoint.connectedAnchor = Vector3.zero;
@@ -85,8 +91,6 @@ public class SurfaceInteractionPhysics : MonoBehaviour
     void Update()
     {
         gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        
-        
+        gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;  
     }
 }

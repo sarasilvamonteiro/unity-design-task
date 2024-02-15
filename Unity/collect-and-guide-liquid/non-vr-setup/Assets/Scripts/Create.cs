@@ -21,7 +21,7 @@ public class Create : MonoBehaviour
     /*!\The surface has always the same type of behavior for hand input.
         If useHands is true, and physics is true, only the hands' behavior changes.
         If useHands is false (meaning cursor is true), and physics is true, only the surface's behavior changes. */
-public bool useHands = false;
+    public bool useHands = false;
     public bool physics = false;
 
     public bool emptyTrial = false;
@@ -41,19 +41,17 @@ public bool useHands = false;
     public GameObject liquidContainer;
     private List<com.zibra.liquid.Manipulators.ZibraLiquidCollider> ColliderList;
 
-    public int totalParticles;  
+    public int totalParticles = 1;
     [System.NonSerialized]
     public int sphereNumber;
     [System.NonSerialized]
     public Dictionary<int, int> SphereIDs;
 
 
-
     private void Update()
     {
-        
+
         // Check if StartButton is pressed. //
-        //
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 mousePoint = Input.mousePosition;
@@ -71,7 +69,6 @@ public bool useHands = false;
         if (start == true)
         {
             // Disable Start Button. //
-            //
             gameObject.GetComponent<BoxCollider>().enabled = false;
             foreach (Collider collider in gameObject.GetComponentsInChildren<Collider>())
             {
@@ -83,7 +80,6 @@ public bool useHands = false;
             }
 
             // Get number of holes and flows. //
-            //
             if (emptyTrial == false)
             {
                 holes = Holes.GetComponent<StartSlider>().number;
@@ -96,7 +92,6 @@ public bool useHands = false;
         }
 
         // Make fluid emitter stop if total created particles is above our totalParticles limit. //
-        //
         if (running && !emptyTrial)
         {
             if (emitterContainer.GetComponentInChildren<com.zibra.liquid.Manipulators.ZibraLiquidEmitter>().CreatedParticlesTotal >= totalParticles)
@@ -116,19 +111,16 @@ public bool useHands = false;
         SphereIDs = new Dictionary<int, int>();
 
         // Create surface. //
-        //
         SphereSheet(Rows: 9);
 
         if (emptyTrial == false)
         {
             // Create environment. //
-            //
             Ground(HolesNumber: holes);
             Liquid(FlowsNumber: flows, LiquidColliders: ColliderList, VolumePerFrame: 0.01f);
         }
 
         // Set type of leapManager and leapProvider for handtracking data. //
-        //
         if (useHands && gameObject.GetComponent<GetData>().enabled)
         {
             if (!physics)
@@ -147,13 +139,25 @@ public bool useHands = false;
 
         // GetData.cs makes start = false. 
         // If it is disabled, we need to set start = false in this script. //
-        //
-        if (gameObject.GetComponent<GetData>().enabled == false) 
+        if (gameObject.GetComponent<GetData>().enabled == false)
         {
             start = false;
         }
 
     }
+
+
+
+    private void SetActiveChildren(Transform transform, bool value)
+    {
+        foreach (Transform child in transform)
+        {
+
+            child.gameObject.SetActive(value);
+            //SetActiveChildren(child, true);
+        }    
+    }
+
 
 
     /*!\ Create surface. 
@@ -168,39 +172,47 @@ public bool useHands = false;
         // It starts arbitrarily at 2000, and has a 25 int increment. //
         int sphereID = 2000; // 
 
-        float x = 0;
+        // EDIT: Initial sphere position (we want the surface centered). //
+        float x = -sphereScale * (Rows - 1); // -(sphereScale * Rows) / 2;
         float y = 0.5f;
-        float z = 0;
+        float z = -sphereScale * (Rows - 1); // -(sphereScale * Rows) / 2;
 
         // Create ClayContainer. //
         clayContainer = new GameObject().AddComponent<ClayContainer>();
         clayContainer.setInteractive(true);
         clayContainer.name = "Main Object";
-        clayContainer.transform.position = new Vector3(10 - (2.5f + (Rows - 1) * 2 * sphereScale), 4f, -(Rows - 1) * sphereScale);
+        // EDIT: I swapped x with z so that all axes are positive. 
+        // We want the container to be centered at x.
+        clayContainer.transform.position = new Vector3(0, 4f, 10 - (2.5f + (Rows - 1) * sphereScale));
         clayContainer.transform.localScale = Vector3.one;
         clayContainer.setMaxSolidsPerVoxel(2048);
 
         // Create one sphere (n) for each loop iteration. //
-        //
         for (int n = 0, r = 0; n < sphereNumber; n++, r++)
         {
-            // Start next row. //
+            /*!\ Start next row.
+                 if r == Rows, it means we have created as many spheres as Rows
+                 so we want to restart the row counter (r = 0). */
             if (n < Rows * Rows && r == Rows)
             {
                 r = 0;
-                x = 0;
+                x = -sphereScale * (Rows - 1);
                 z += 2 * sphereScale;
             }
+            // if n == Rows, we need to start creating the connection spheres (inside main grid).
             if (n == Rows * Rows)
             {
                 r = 0;
-                x = 0 + 2 * sphereScale / 2;
-                z = 0 + 2 * sphereScale / 2;
+                x = -sphereScale * (Rows - 1) + sphereScale;
+                z = -sphereScale * (Rows - 1) + sphereScale;
             }
+            /*!\ This loop accounts for when the connection spheres rows reach its final limit (r == Rows-1).
+                 Connection spheres have a grid of (Rows-1) by (Rows-1) and they sit inside the main Rows by Rows
+                 main grid. */
             if (n > Rows * Rows && r == Rows - 1)
             {
                 r = 0;
-                x = 0 + 2 * sphereScale / 2;
+                x = -sphereScale * (Rows - 1) + sphereScale;
                 z += 2 * sphereScale;
             }
 
@@ -210,34 +222,46 @@ public bool useHands = false;
             newCollider.transform.parent = clayContainer.transform;
             newCollider.transform.localScale = 2 * sphereScale * Vector3.one;
             newCollider.transform.localPosition = new Vector3(x, y, z);
-            newCollider.AddComponent<SphereCollider>(); 
+            newCollider.AddComponent<SphereCollider>();
             newCollider.AddComponent<com.zibra.liquid.SDFObjects.AnalyticSDF>().ChosenSDFType = com.zibra.liquid.SDFObjects.AnalyticSDF.SDFType.Sphere;
             ColliderList.Add(newCollider.AddComponent<com.zibra.liquid.Manipulators.ZibraLiquidCollider>());
+
+
             if (useHands)
             {
                 newCollider.AddComponent<Rigidbody>().useGravity = false;
                 newCollider.GetComponent<Rigidbody>().mass = 1f;
                 newCollider.AddComponent<SurfaceInteractionPhysics>();
-                // Remove behaviour for physics          
+                newCollider.GetComponent<SphereCollider>().radius = 1f;
+
+
                 if (!physics)
                 {
                     newCollider.AddComponent<InteractionBehaviour>().manager = FindObjectOfType<InteractionManager>();
+                    // We don't want the software to recognize a certain finger configuration as grasping, so that it behaves more naturaly. 
                     newCollider.GetComponent<InteractionBehaviour>().moveObjectWhenGrasped = false;
-                    newCollider.GetComponent<SphereCollider>().radius = 0.9f;
+                    //newCollider.GetComponent<SphereCollider>().radius = 0.9f;
                 }
 
+
+                newCollider.AddComponent<OnCollision>();
             }
             if (!useHands)
-            {               
+            {
                 if (physics)
                 {
                     newCollider.AddComponent<Rigidbody>().useGravity = false;
                     newCollider.GetComponent<Rigidbody>().mass = 100;
                     newCollider.AddComponent<SurfaceInteractionPhysics>();
-                    newCollider.AddComponent<NewCursor>();
+                    /*!\ PhysicsCursor() applies vector increments to the spheres in the direction of the cursor movement. 
+                         Unity's built in physics simulator is responsible for making all the sphere's movement dynamics 
+                         under those vector increments. */
+                    newCollider.AddComponent<PhysicsCursor>(); 
+                    
                 }
                 if (!physics)
                 {
+                    // MoveCursor() is responsible for programming all the sphere's movement under cursor control.
                     newCollider.AddComponent<MoveCursor>().enabled = true;
                 }
 
@@ -245,13 +269,18 @@ public bool useHands = false;
             SphereIDs.Add(newCollider.gameObject.GetInstanceID(), sphereID);
             sphereID += 25;
 
-            // Add new clay object
+            // Add new clay object. //
             ClayObject newSphere = clayContainer.addClayObject();
-            newSphere.setPrimitiveType(1); // sphere = 1; see claySDF.compute solidType for other shapes
+            // sphere primitive type = 1; see claySDF.compute solidType for other shapes.
+            newSphere.setPrimitiveType(1); 
             newSphere.name = "clay_" + n.ToString();
             newSphere.transform.parent = newCollider.transform;
             newSphere.transform.localPosition = Vector3.zero;
             newSphere.transform.localScale = 0.5f * Vector3.one;
+            //if (useHands)
+            //{
+             //   newSphere.gameObject.AddComponent<SphereCollider>();
+            //}
             newSphere.blend = 0.55f;
             newSphere.color = new Color(0.35f, 0.90f, 1, 1);
 
@@ -259,7 +288,7 @@ public bool useHands = false;
 
         }
 
-        // save initial positions
+        // save initial positions //
 
     }
 
@@ -295,24 +324,24 @@ public bool useHands = false;
         holeColor.GetComponent<MeshRenderer>().material = holeColorMaterial;
         holeColorMaterial.color = Color.black;
 
-        // Add holes and ground colliders:
-
-        float z = HolesNumber + 1;
-
+        // Add holes and ground colliders. //
+        // EDIT: Swap x by z so that all axis are positive during analysis. 
+        
+        // Initial x position. //
+        float x = HolesNumber + 1;
 
         for (int h = 1; h <= HolesNumber; h++)
         {
-
-            float x = 1.5f;
-
+            float z = 1.5f;
+            // Center hole at x = 0 if it's either 1 or 3 holes. 
             if (h == HolesNumber && HolesNumber != 2)
             {
-                z = 0;
+                x = 0;
             }
-
+            // Shift side holes to the side by 1.5 when there are 3 total holes.
             if (h != HolesNumber && HolesNumber == 3)
             {
-                x = Math.Abs(z) + 1.5f;
+                z = Math.Abs(x) + 1.5f;
             }
 
             ClayObject hole = groundContainer.addClayObject();
@@ -328,11 +357,10 @@ public bool useHands = false;
             GameObject holeDetector = new GameObject();
             holeDetector.name = "hole_detector_" + (h - 1).ToString();
             holeDetector.transform.parent = detectors.transform;
-            holeDetector.transform.localPosition = new Vector3(holePosition.x, 0, holePosition.z); // new Vector3(holePosition.x, 0, holePosition.z);
+            holeDetector.transform.localPosition = new Vector3(holePosition.x, 0, holePosition.z);
             holeDetector.transform.localScale = new Vector3(2f, 0.1f, 2f); // new Vector3(1.5f,1,1.5f);
             holeDetector.AddComponent<SphereCollider>().enabled = false;
             holeDetector.AddComponent<com.zibra.liquid.SDFObjects.AnalyticSDF>().ChosenSDFType = com.zibra.liquid.SDFObjects.AnalyticSDF.SDFType.Sphere;
-            //holeDetector.AddComponent<com.zibra.liquid.Manipulators.ZibraLiquidDetector>();
             holeDetector.AddComponent<com.zibra.liquid.Manipulators.ZibraLiquidVoid>();
 
             GameObject holeCollider = new GameObject();
@@ -342,29 +370,29 @@ public bool useHands = false;
             holeCollider.AddComponent<com.zibra.liquid.SDFObjects.AnalyticSDF>().ChosenSDFType = com.zibra.liquid.SDFObjects.AnalyticSDF.SDFType.Torus;
             ColliderList.Add(holeCollider.AddComponent<com.zibra.liquid.Manipulators.ZibraLiquidCollider>());
 
-            z = -z;
+            x = -x;
 
-            // Ground colliders:
+            // Ground colliders. //
             float width = 3 - holeSize.x;
-            float length = holePosition.x + holeSize.x;
+            float length = holePosition.z + holeSize.x;
             Vector3 position = (holeSize.x + width / 2) * Vector3.one;
 
             for (int g = 1; g <= 4; g++)
             {
 
-                float x_scale = 12;
-                float z_scale = width;
-                float x_position = 10 - (x_scale / 2);
-                float z_position = holePosition.z + position.z;
+                float z_scale = 12;
+                float x_scale = width;
+                float z_position = 10 - (z_scale / 2);
+                float x_position = holePosition.x + position.x;
 
                 if (g % 2 == 0)
                 {
-                    x_scale = 10 - length;
-                    x_position = holePosition.x + 0.5f * position.x + x_scale / 2;
-                    z_scale = 2 * width;
-                    z_position = holePosition.z;
+                    z_scale = 10 - length;
+                    z_position = holePosition.z + 0.5f * position.z + z_scale / 2;
+                    x_scale = 2 * width;
+                    x_position = holePosition.x;
 
-                    length = x_scale + 2 * length;
+                    length = z_scale + 2 * length;
                     position = -position;
 
                 }
@@ -380,7 +408,7 @@ public bool useHands = false;
             }
         }
 
-        float z_ = 7 - (2.5f - HolesNumber);
+        float x_ = 7 - (2.5f - HolesNumber);
 
         for (int g = 1; g <= 2; g++)
         {
@@ -388,20 +416,20 @@ public bool useHands = false;
             GameObject groundCollider_ = new GameObject();
             groundCollider_.name = "ground_collider_" + g.ToString();
             groundCollider_.transform.parent = colliders.transform;
-            groundCollider_.transform.localScale = new Vector3(12, 0.5f, Mathf.Pow(4 - HolesNumber, 2.5f - HolesNumber));
-            groundCollider_.transform.localPosition = new Vector3(4, 0, z_);
+            groundCollider_.transform.localScale = new Vector3(2.5f - HolesNumber, 0.5f, Mathf.Pow(4 - HolesNumber, 12));
+            groundCollider_.transform.localPosition = new Vector3(x_, 0, 4);
             groundCollider_.AddComponent<com.zibra.liquid.SDFObjects.AnalyticSDF>().ChosenSDFType = com.zibra.liquid.SDFObjects.AnalyticSDF.SDFType.Box;
             ColliderList.Add(groundCollider_.AddComponent<com.zibra.liquid.Manipulators.ZibraLiquidCollider>());
 
-            z_ = -z_;
+            x_ = -x_;
 
         }
-     
+
         GameObject groundDetector = new GameObject();
         groundDetector.name = "ground_detector_0";
         groundDetector.transform.parent = detectors.transform;
         groundDetector.transform.localScale = new Vector3(20, 1, 20);
-        groundDetector.transform.localPosition = new Vector3(5, 0.5f, 0); // new Vector3(5, 0.34f, 0);
+        groundDetector.transform.localPosition = new Vector3(0, 0.5f, 5); // new Vector3(0, 0.34f, 5);
         groundDetector.AddComponent<BoxCollider>().enabled = false;
         groundDetector.AddComponent<com.zibra.liquid.SDFObjects.AnalyticSDF>().ChosenSDFType = com.zibra.liquid.SDFObjects.AnalyticSDF.SDFType.Box;
         groundDetector.AddComponent<com.zibra.liquid.Manipulators.ZibraLiquidDetector>();
@@ -410,7 +438,7 @@ public bool useHands = false;
         GameObject groundVoidDetector = new GameObject();
         groundVoidDetector.name = "void_detector_0";
         groundVoidDetector.transform.parent = detectors.transform;
-        groundVoidDetector.transform.localPosition = new Vector3(6, -0.25f, 0);
+        groundVoidDetector.transform.localPosition = new Vector3(0, -0.25f, 6);
         groundVoidDetector.transform.localScale = new Vector3(25, 0.1f, 25);
         groundVoidDetector.AddComponent<com.zibra.liquid.SDFObjects.AnalyticSDF>().ChosenSDFType = com.zibra.liquid.SDFObjects.AnalyticSDF.SDFType.Sphere;
         groundVoidDetector.AddComponent<com.zibra.liquid.Manipulators.ZibraLiquidVoid>();
@@ -418,7 +446,7 @@ public bool useHands = false;
         GameObject groundVoidDetector2 = new GameObject();
         groundVoidDetector2.name = "void_detector_1";
         groundVoidDetector2.transform.parent = detectors.transform;
-        groundVoidDetector2.transform.localPosition = new Vector3(6, 0, 0);
+        groundVoidDetector2.transform.localPosition = new Vector3(0, 0, 6);
         groundVoidDetector2.transform.localScale = new Vector3(1, 1.5f, 1);
         groundVoidDetector2.AddComponent<com.zibra.liquid.SDFObjects.AnalyticSDF>().ChosenSDFType = com.zibra.liquid.SDFObjects.AnalyticSDF.SDFType.Torus;
         groundVoidDetector2.AddComponent<com.zibra.liquid.Manipulators.ZibraLiquidVoid>();
@@ -426,7 +454,7 @@ public bool useHands = false;
         GameObject groundVoidDetector3 = new GameObject();
         groundVoidDetector3.name = "void_detector_2";
         groundVoidDetector3.transform.parent = detectors.transform;
-        groundVoidDetector3.transform.localPosition = new Vector3(6, 0, 0);
+        groundVoidDetector3.transform.localPosition = new Vector3(0, 0, 6);
         groundVoidDetector3.transform.localScale = new Vector3(2, 2, 2);
         groundVoidDetector3.AddComponent<com.zibra.liquid.SDFObjects.AnalyticSDF>().ChosenSDFType = com.zibra.liquid.SDFObjects.AnalyticSDF.SDFType.Sphere;
         groundVoidDetector3.AddComponent<com.zibra.liquid.Manipulators.ZibraLiquidVoid>();
@@ -439,7 +467,7 @@ public bool useHands = false;
         // Create Liquid Container
         liquidContainer = new GameObject();
         liquidContainer.name = "Liquid";
-        liquidContainer.transform.position = new Vector3(5, 5, 0);
+        liquidContainer.transform.position = new Vector3(0, 5, 5);
         liquidContainer.transform.eulerAngles = new Vector3(0, 180f, 0);
 
         // Create flows 
@@ -449,8 +477,8 @@ public bool useHands = false;
         emitterContainer.transform.parent = liquidContainer.transform;
 
         float y = 8f;
-        float z = FlowsNumber - 1f;
-        Vector3 velocity = new Vector3(1.6f, 0.2f, 0); // velocity = new Vector3(1.6f, 0, 0)
+        float x = FlowsNumber - 1f;
+        Vector3 velocity = new Vector3(0, 0.2f, 1.6f); // velocity = new Vector3(1.6f, 0, 0)
         Vector3 rotation = Vector3.zero;
 
 
@@ -461,25 +489,25 @@ public bool useHands = false;
                 if (f == 3)
                 {
                     y = 10;
-                    z = 0;
+                    x = 0;
                 }
 
-                velocity = new Vector3(1.6f, 0.2f, -0.2f * z); //new Vector3(0.15f * z, 0, 0.6f * -z);
-                rotation = 5 * z * Vector3.up;
+                velocity = new Vector3(- 0.2f * x, 0.2f, 1.6f);
+                rotation = 5 * x * Vector3.up;
             }
 
             // Create Emitter Container
             GameObject emitter = new GameObject();
             emitter.name = "emitter_" + (f - 1).ToString();
             emitter.transform.parent = emitterContainer.transform;
-            emitter.transform.localPosition = new Vector3(0, y, z);
+            emitter.transform.localPosition = new Vector3(x, y, 0);
             emitter.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
-            emitter.transform.eulerAngles = new Vector3(0, 0, 90);
+            emitter.transform.eulerAngles = new Vector3(90, 0, 0); 
 
             GameObject flow = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             flow.name = "flow";
             flow.transform.parent = emitter.transform;
-            flow.transform.localPosition = new Vector3(-1.5f, 0, 0);
+            flow.transform.localPosition = new Vector3(0, 0, -1.5f);
             flow.transform.localEulerAngles += rotation; // 
             flow.transform.localScale = new Vector3(3, 3, 3);
             Material flowMaterial = new Material(Shader.Find("Standard"));
@@ -490,7 +518,7 @@ public bool useHands = false;
             GameObject flowDetector = new GameObject();
             flowDetector.name = "flow_detector_" + (f - 1).ToString();
             flowDetector.transform.parent = emitter.transform;
-            flowDetector.transform.localPosition = new Vector3(2.5f, 0, 0); // new Vector3(holePosition.x, 0, holePosition.z);
+            flowDetector.transform.localPosition = new Vector3(0, 0, 2.5f); // new Vector3(holePosition.x, 0, holePosition.z);
             flowDetector.transform.localScale = new Vector3(1.5f / emitter.transform.localScale.x, 0.07f / emitter.transform.localScale.y, 1.5f / emitter.transform.localScale.z); // new Vector3(1.5f,1,1.5f);
             flowDetector.AddComponent<SphereCollider>().enabled = false;
             flowDetector.AddComponent<com.zibra.liquid.SDFObjects.AnalyticSDF>().ChosenSDFType = com.zibra.liquid.SDFObjects.AnalyticSDF.SDFType.Box;
@@ -501,7 +529,7 @@ public bool useHands = false;
             emitter.GetComponent<com.zibra.liquid.Manipulators.ZibraLiquidEmitter>().InitialVelocity = velocity; //  new Vector3 (velocity.x, 0, velocity.z + 0.2f*z);
             emitter.GetComponent<com.zibra.liquid.Manipulators.ZibraLiquidEmitter>().VolumePerSimTime = Math.Max(VolumePerFrame, 0.01f); // /FlowsNumber
 
-            z = -z;
+            x = -x;
         }
 
         liquidContainer.SetActive(false);
@@ -550,5 +578,5 @@ public bool useHands = false;
         liquid.SolverParameters.MaximumVelocity = 2f;
 
     }
-   
+
 }

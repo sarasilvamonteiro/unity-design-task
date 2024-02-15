@@ -36,9 +36,9 @@ public class GetData : MonoBehaviour
 
     public int subjectNumber;
     
-    [System.NonSerialized]
+    //[System.NonSerialized]
     public LeapProvider leapProvider;
-    [System.NonSerialized]
+    //[System.NonSerialized]
     public InteractionManager leapManager;
 
     private Clayxels.ClayContainer clayContainer;

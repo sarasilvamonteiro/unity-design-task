@@ -16,7 +16,7 @@ public class Fly : MonoBehaviour
         // Get rigidbody.
         Rigidbody = GetComponent<Rigidbody>();
         lastY = Rigidbody.transform.position.y;
-        useHands = GameObject.FindGameObjectWithTag("GameController").GetComponent<Create>().useHands;
+        useHands = FindObjectOfType<Create>().useHands;
         sensitivity = 0.025f;
     }
 
@@ -24,7 +24,7 @@ public class Fly : MonoBehaviour
     {
         Application.targetFrameRate = 100;
 
-        running = GameObject.FindGameObjectWithTag("GameController").GetComponent<Create>().running;
+        running = FindObjectOfType<Create>().running;
         Up = false;
         Down = false;
         
