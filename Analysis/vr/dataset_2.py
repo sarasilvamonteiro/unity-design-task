@@ -53,9 +53,6 @@ class ManageData():
         # back, middle, front
         BMF_dict = {'B': 0, 'M': int(length/2), 'F': int(length-1)}
 
-        print(BMF_dict[BMF])
-        print(LCR_dict[LCR])
-
         section_cmap = self.cmap[BMF_dict[BMF], LCR_dict[LCR]]
 
         return section_cmap
@@ -411,6 +408,13 @@ class ManageData():
         object_syllables = pd.read_pickle(object + '_preprocessed_syllables')
         return object_syllables
 
+    def load_features(self, object):
+        """
+        :param object: str, 'hands', 'surface' or 'eyes'
+        """
+        object_syllables = pd.read_pickle(object + '_features')
+        return object_syllables
+
     def load_surface_moving(self):
         surface_moving = pd.read_pickle('surface_moving')
         return surface_moving
@@ -523,11 +527,27 @@ class ManageData():
         :param as_array: bool
         """
         print('Extracting values as features...')
+
+        if 'PalmPosition' in data.columns:
+            object = 'hands'
+            print(object)
+        if 'Sphere2000' in data.columns:
+            object = 'surface'
+            print(object)
+        if 'AgentLookingAt' in data.columns:
+            object = 'eye'
+            print(object)
+
+        print(data.index)
+
         data = data.sort_index()
+        print(data.index)
         values = pd.DataFrame(index=data.index)
         values = values.loc[~values.index.duplicated(keep='first')]
+        print(values.index)
 
         for syllable_id, syllable, subj, trial, holes, level_order, hand in data.index.unique():
+            print(syllable_id, syllable)
             features = data.loc[(syllable_id, syllable, subj, trial, holes, level_order, hand), 'Timestamp'].values.reshape(-1, 1).T
             for column in data.columns[:-1]:
                 features = np.concatenate((data.loc[(syllable_id, syllable, subj, trial,
