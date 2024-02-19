@@ -2,19 +2,18 @@ import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import umap
 import pandas as pd
-from jan24.dataset_2 import *
+from jan_24.dataset_2 import *
 from sklearn.decomposition import PCA
-
 
 data_manager = ManageData(IOS=True)
 
-# last_update: 15 Feb 24
+# last_update: 19 Feb 24
 
 def draw_umap(umap_values, hand, holes, trial='all', n_neighbors=15, min_dist=0.1, n_components=2, lr=1, metric='euclidean',
-              title='', pca=False):  # 'euclidean'
+              title='', pca_components=False):  # 'euclidean'
 
-    suptitle = f'Hand: {hand.lower()} Trial: {str(trial)} Holes: {str(holes)}'#  (sorted by {sort_by})'
-    title = f'(neigh:{str(n_neighbors)} min-dist:{str(min_dist)})'
+    suptitle = f'Hand: {hand.lower()} Trial: {trial} Holes: {holes}'#  (sorted by {sort_by})'
+    title = f'(neigh:{n_neighbors} min-dist:{min_dist} pca:{str(pca_components).lower()})'
 
     fit = umap.UMAP(
         n_neighbors=n_neighbors,
@@ -23,12 +22,12 @@ def draw_umap(umap_values, hand, holes, trial='all', n_neighbors=15, min_dist=0.
         metric=metric,
         learning_rate=lr)
 
-    pca_ = PCA(n_components=10)
+    pca_ = PCA(n_components=pca_components)
 
     if trial != 'all':
-        trial_data = umap_values.loc[:, :, :, trial, holes, :, hand]
+        trial_data = umap_values.loc[:, data_manager.section_list, :, trial, holes, :, hand]
     else: # trial == all
-        trial_data = umap_values.loc[:, :, :, :, holes, :, hand]
+        trial_data = umap_values.loc[:, data_manager.section_list, :, :, holes, :, hand]
 
 
     trial_syllables = trial_data.index.get_level_values('syllable')
@@ -39,7 +38,7 @@ def draw_umap(umap_values, hand, holes, trial='all', n_neighbors=15, min_dist=0.
     for idx, syllable in enumerate(trial_syllables):
         #if type(syllable) != type('str'):
         #    LCR, BMF = 'L','F'
-        print(trial_data.iloc[idx])
+        #print(trial_data.iloc[idx])
         if syllable[1] in ['F', 'M', 'B']:
             LCR = syllable[0]
             BMF = syllable[1]
@@ -58,10 +57,10 @@ def draw_umap(umap_values, hand, holes, trial='all', n_neighbors=15, min_dist=0.
 
 
 
-    if pca:
+    if pca_components != False:
         pca_vals = pca_.fit_transform(trial_data)
         u = fit.fit_transform(pca_vals)
-    else:
+    if not pca_components:
         u = fit.fit_transform(trial_data)
 
     fig = plt.figure(figsize=(10, 5))
@@ -74,11 +73,13 @@ def draw_umap(umap_values, hand, holes, trial='all', n_neighbors=15, min_dist=0.
         # plot UMAP
         ax1 = plt.subplot(gs[0])
         ax1.set_title(title)
-        ax1.scatter(u[:, 0][up], u[:, 1][up], c=color[0], marker=r'$\Uparrow$', s=200)
-        ax1.scatter(u[:, 0][down], u[:, 1][down], c=color[1], marker=r'$\Downarrow$', s=200)
-
-        #ax1.scatter(u[:, 0][up], u[:, 1][up], c=[section_cmap[i] for i in up], marker=r'$\Uparrow$', s=200)
-        #ax1.scatter(u[:, 0][down], u[:, 1][down], c=[section_cmap[i] for i in down], marker=r'$\Downarrow$', s=200)
+        # plot up vs. down:
+        #ax1.scatter(u[:, 0][up], u[:, 1][up], c=color[0], marker=r'$\Uparrow$', s=200)
+        #ax1.scatter(u[:, 0][down], u[:, 1][down], c=color[1], marker=r'$\Downarrow$', s=200)
+        # plot surface section:
+        ax1.scatter(u[:, 0][up], u[:, 1][up], c=[section_cmap[i] for i in up], marker=r'$\Uparrow$', s=200)
+        ax1.scatter(u[:, 0][down], u[:, 1][down], c=[section_cmap[i] for i in down], marker=r'$\Downarrow$', s=200)
+        # plot line:
         #ax1.plot(u[:, 0],u[:, 1], linewidth=0.4, c='k')
         ax1.set_aspect('auto')
     if n_components == 3:

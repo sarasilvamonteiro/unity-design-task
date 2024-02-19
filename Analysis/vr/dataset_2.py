@@ -5,6 +5,8 @@ from sklearn import preprocessing
 from scipy.interpolate import interp1d
 
 
+# last_update: 19 Feb 24
+
 class ManageData():
     """
     Functions to run before anything:
@@ -39,10 +41,11 @@ class ManageData():
         self.nr_subjects = len(self.subjects)
         self.nr_joints = 31
         self.nr_spheres = 145
-        self.section_list = ['LMidUp', 'LFrontUp', 'CFrontUp',
-                             'RFrontUp', 'RMidUp', 'RFrontDown',
-                             'CFrontDown', 'LFrontDown', 'CBackUp',
-                             'CLFront', 'CRFront']
+        self.section_list = ['LFUp', 'LFDown', 'LBUp', 'LBDown',
+                             'RFUp', 'RFDown', 'RBUp', 'RBDown',
+                             'CFDown', 'CFUp', 'CBUp', 'CBDown',
+                             'CLFUp', 'CLFDown']
+                             #'LMUp', 'LMDown', 'RMUp', 'RMDown',  'CMUp', 'CMDown']
         self.cmap = np.load("jan_24\surface_colormap.npy")
 
     def section_cmap(self, LCR, BMF, length):
