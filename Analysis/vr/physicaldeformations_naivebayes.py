@@ -4,7 +4,6 @@ from time import time
 from sklearn.naive_bayes import MultinomialNB, GaussianNB, ComplementNB
 from sklearn import metrics
 import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
 import seaborn as sns
 
 from jan_24.dataset_2 import *
