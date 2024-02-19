@@ -33,6 +33,7 @@ class ManageData():
             self.path = r"C:\Users\Sara\Desktop\DesignMotorTask\Data"
         # new subjects
         self.subjects = np.arange(1,16,1)
+        #self.subjects = [10]
         # old subjects
         #self.subjects = np.array([5, 8, 9, 11, 12, 13, 14, 15, 16, 17])
         self.nr_subjects = len(self.subjects)
@@ -177,7 +178,7 @@ class ManageData():
                 if key[0] <= position <= key[-1]:
                     return section_dict[key]
 
-        LCR_dict = {(0, 0.2): 'L', (0.2, 0.4): 'CL', (0.4, 0.6): 'C', (0.6, 0.8): 'CR', (0.8, 1): 'R'}
+        LCR_dict = {(0, 0.35): 'L', (0.35, 0.65): 'C', (0.65, 1): 'R'}
         BMF_dict = {(0, 1 / 3): 'F', (1 / 3, 2 / 3): 'M', (2 / 3, 1): 'B'}
 
         id_to_section = {};
@@ -268,30 +269,43 @@ class ManageData():
 
         def get_section_direction():
 
-            for hand in ['Left', 'Right']:
-                print(f'syllable: {syllable_id-1}, hand: {hand.lower()}')
-                if ((hand_syllables_df['id'] == syllable_id-1) & (hand_syllables_df['hand'] == hand)).any():
 
 
-                    sphereIDs = touched_spheres_df[(touched_spheres_df['id'] == syllable_id - 1) &
-                                                   (touched_spheres_df['hand'] == hand)]['SphereID']
-                    main_sphere = int(sphereIDs.value_counts().idxmax())
-                    print(main_sphere)
-                    # get y trajectory of current syllable (use main touched sphere)
-                    y = surface_syllables_df[(surface_syllables_df['id'] == syllable_id-1) &
-                                             (surface_syllables_df['hand'] == hand)][f'Sphere{main_sphere}'].apply(lambda x: x['y'])
-                    #y = hand_syllables_df[(hand_syllables_df['id'] == syllable_id - 1) &
-                    #                      (hand_syllables_df['hand'] == hand)]['PalmPosition'].apply(lambda x: x['y'])
-                    # get direction of movement
-                    direction = "Up" if np.mean(np.diff(y.astype(float))) > 0 else "Down"
-                    # get surface section
-                    lcr, bmf = section_dict[main_sphere]
-                    # add values to all dfs
-                    surface_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
-                    hand_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
-                    eye_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
-                    touched_spheres_df.loc[sphereIDs.index, 'syllable'] = lcr + bmf + direction
+                if (hand_syllables_df.iloc[-1, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes, shown]).all():
 
+                    touched_spheres = touched_spheres_df[np.all(
+                        touched_spheres_df.iloc[:, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes,
+                                                                               shown], axis=1)]
+                    surface = surface_syllables_df[np.all(
+                        surface_syllables_df.iloc[:, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes,
+                                                                                 shown], axis=1)]
+
+
+                    for hand in ['Left', 'Right']:
+                        #print(f'syllable: {last_syllable_id}, hand: {hand.lower()}')
+
+                        sphereIDs = touched_spheres[touched_spheres['hand'] == hand]['SphereID']
+
+                        if sphereIDs.empty:
+                            continue
+
+                        main_sphere = int(sphereIDs.value_counts().idxmax())
+                        #print(main_sphere)
+                        y = surface[surface['hand'] == hand][f'Sphere{main_sphere}'].apply(lambda x: x['y'])
+                        #print(y)
+                        #print(np.mean(np.diff(y.astype(float))))
+
+                        # get direction of movement
+                        direction = "Up" if np.mean(np.diff(y.astype(float))) > 0 else "Down"
+
+                        # get surface section
+                        lcr, bmf = section_dict[main_sphere]
+                        #print(lcr, bmf, direction)
+                        # add values to all dfs
+                        surface_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
+                        hand_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
+                        eye_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
+                        touched_spheres_df.loc[sphereIDs.index, 'syllable'] = lcr + bmf + direction
 
 
         for subj in self.subjects:
@@ -329,7 +343,7 @@ class ManageData():
                     #print(syllable, frame)
                     # get two frames before and two frames after deformation
                     # check if frame is in deformation indexes
-                    if any([f in L_touch for f in np.arange(frame-1, frame+2, 1)]):
+                    if any([f in L_touch for f in np.arange(frame-1, frame+2, 1)]) and syllable_id != 0:
                         ### save surface syllables ###
                         surface_syllables_df = save_to_syllable_df(surface_syllables_df,
                                                                    surface_data.iloc[frame,
@@ -347,7 +361,7 @@ class ManageData():
                         last_syllable_id = syllable_id
                         touch = True
 
-                    if any([f in R_touch for f in np.arange(frame-1, frame+2, 1)]):
+                    if any([f in R_touch for f in np.arange(frame-1, frame+2, 1)]) and syllable_id != 0:
                         ### save surface syllables ###
                         surface_syllables_df = save_to_syllable_df(surface_syllables_df,
                                                                    surface_data.iloc[frame,
@@ -389,6 +403,7 @@ class ManageData():
                     if not touch:
                         touch = False
                         if syllable_id > 1:
+                            # because syllable already increased we need to check for syllable-1
                             get_section_direction()
                         syllable_id = last_syllable_id + 1
 
@@ -396,8 +411,8 @@ class ManageData():
 
         # save syllables
         surface_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('surface_syllables')
-        hand_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('hand_syllables')
-        eye_syllables_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('eye_syllables')
+        hand_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('hands_syllables')
+        eye_syllables_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('eyes_syllables')
         touched_spheres_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('sphereID_syllables')
         print('Done.')
         # ..............
