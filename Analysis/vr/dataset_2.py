@@ -5,7 +5,7 @@ from sklearn import preprocessing
 from scipy.interpolate import interp1d
 
 
-# last_update: 19 Feb 24
+# last_update: 27 Feb 24
 
 class ManageData():
     """
@@ -46,9 +46,10 @@ class ManageData():
                              'CFDown', 'CFUp', 'CBUp', 'CBDown',
                              'CLFUp', 'CLFDown']
                              #'LMUp', 'LMDown', 'RMUp', 'RMDown',  'CMUp', 'CMDown']
+        #self.section_list = ['RFUp', 'LBUp', 'CFDown']
         self.cmap = np.load("jan_24\surface_colormap.npy")
 
-    def section_cmap(self, LCR, BMF, length):
+    def section_cmap(self, LCR, BMF, length, return_index=False):
         """ Indexes of 2D color map (surface top view). """
 
         # left, center, right
@@ -58,7 +59,10 @@ class ManageData():
 
         section_cmap = self.cmap[BMF_dict[BMF], LCR_dict[LCR]]
 
-        return section_cmap
+        if return_index: # We needed to revert the y axis of the cmap. I don't know why they are reversed.
+            return section_cmap, np.array([LCR_dict[LCR],100-BMF_dict[BMF]])
+        else:
+            return section_cmap
 
     #######################
     ##### Import Data #####
@@ -161,7 +165,6 @@ class ManageData():
         #        if len(element) > 0:
         #            result = pd.json_normalize(df[element.tag])
         #            df[element.tag].columns = result.columns
-
         return df
     #####################
 
@@ -230,7 +233,6 @@ class ManageData():
             return hand_dict[hand], color_dict[hand]
 
 
-
     def get_syllables(self):
         """
         Load data and check when hands are touching the surface.
@@ -238,12 +240,10 @@ class ManageData():
         labeled as individual syllables.
         Save the resulting Dataframe.
         """
-
         surface_syllables_df = pd.DataFrame()
         hand_syllables_df = pd.DataFrame()
         eye_syllables_df = pd.DataFrame()
         touched_spheres_df = pd.DataFrame()
-
         section_dict = self.surface_section()
 
         def save_to_syllable_df(object_df, object_data, hand, transpose=True):
@@ -272,8 +272,6 @@ class ManageData():
 
         def get_section_direction():
 
-
-
                 if (hand_syllables_df.iloc[-1, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes, shown]).all():
 
                     touched_spheres = touched_spheres_df[np.all(
@@ -282,25 +280,18 @@ class ManageData():
                     surface = surface_syllables_df[np.all(
                         surface_syllables_df.iloc[:, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes,
                                                                                  shown], axis=1)]
-
-
                     for hand in ['Left', 'Right']:
                         #print(f'syllable: {last_syllable_id}, hand: {hand.lower()}')
-
                         sphereIDs = touched_spheres[touched_spheres['hand'] == hand]['SphereID']
-
                         if sphereIDs.empty:
                             continue
-
                         main_sphere = int(sphereIDs.value_counts().idxmax())
                         #print(main_sphere)
                         y = surface[surface['hand'] == hand][f'Sphere{main_sphere}'].apply(lambda x: x['y'])
                         #print(y)
                         #print(np.mean(np.diff(y.astype(float))))
-
                         # get direction of movement
                         direction = "Up" if np.mean(np.diff(y.astype(float))) > 0 else "Down"
-
                         # get surface section
                         lcr, bmf = section_dict[main_sphere]
                         #print(lcr, bmf, direction)
@@ -410,8 +401,6 @@ class ManageData():
                             get_section_direction()
                         syllable_id = last_syllable_id + 1
 
-
-
         # save syllables
         surface_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('surface_syllables')
         hand_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('hands_syllables')
@@ -420,36 +409,6 @@ class ManageData():
         print('Done.')
         # ..............
 
-
-
-    def load_info(self, subj):
-        info = pd.read_csv(self.path + '/subject_' + str(subj) + '/information.txt', sep=" ")
-        return info
-
-    def load_syllables(self, object):
-        """
-        :param object: str, 'hands', 'surface' or 'eyes'
-        """
-        object_syllables = pd.read_pickle(object + '_syllables')
-        return object_syllables
-
-    def load_preprocessed_syllables(self, object):
-        """
-        :param object: str, 'hands', 'surface' or 'eyes'
-        """
-        object_syllables = pd.read_pickle(object + '_preprocessed_syllables')
-        return object_syllables
-
-    def load_features(self, object):
-        """
-        :param object: str, 'hands', 'surface' or 'eyes'
-        """
-        object_syllables = pd.read_pickle(object + '_features')
-        return object_syllables
-
-    def load_surface_moving(self):
-        surface_moving = pd.read_pickle('surface_moving')
-        return surface_moving
 
     def preprocess(self, data, norm_position=True, norm_time=True, resample=True,
                    normalizer=preprocessing.MinMaxScaler(), length=100, kind='linear'):
@@ -549,13 +508,14 @@ class ManageData():
         return preprocessed_data
 
 
-    def extract_values(self, data, as_array=False):
+    def extract_values(self, data, derivative=False, as_array=False):
         """
         Get x,y,z,time as features (each column has one element).
         T: number of timestamps
         Number of columns: number of joints/spheres/eyes * number of axis (x,y,z) * T + T
         The last T columns are the timestamps.
         :param data: data to transform (raw or preprocessed).
+        :param derivative: bool, do we want to get the derivative of the movement?
         :param as_array: bool
         """
         print('Extracting values as features...')
@@ -570,22 +530,55 @@ class ManageData():
             object = 'eye'
             print(object)
 
-        print(data.index)
-
+        #print(data.index)
         data = data.sort_index()
         values = pd.DataFrame(index=data.index)
         values = values.loc[~values.index.duplicated(keep='first')]
 
         for syllable_id, syllable, subj, trial, holes, level_order, hand in data.index.unique():
-            print(syllable_id, syllable)
+            #print(syllable_id, syllable)
+            # preprocess time:
             features = data.loc[(syllable_id, syllable, subj, trial, holes, level_order, hand), 'Timestamp'].values.reshape(-1, 1).T
+            # preprocess movement:
             for column in data.columns[:-1]:
-                features = np.concatenate((data.loc[(syllable_id, syllable, subj, trial,
-                holes, level_order, hand), column].apply(pd.Series).values.reshape(-1, 1).T, features), axis=1)
+                if derivative: # do we want to get the derivative of the movement?
+                    column_data = np.gradient(data.loc[(syllable_id, syllable, subj, trial,
+                                                    holes, level_order, hand), column].apply(pd.Series).values, axis=0)
+                else:
+                    column_data = data.loc[(syllable_id, syllable, subj, trial,
+                                            holes, level_order, hand), column].apply(pd.Series).values
+                features = np.concatenate((column_data.reshape(-1, 1).T, features), axis=1)
             values.loc[(syllable_id, syllable, subj, trial, holes, level_order, hand), range(len(features.flatten()))] = features.flatten()
-        values.to_pickle(str(object) + '_features')
+
+        values = values.sort_index(level='id').sort_index(level=['subject', 'level_order', 'trial'])
+        values.to_pickle(str(object) + f'_features_{str(derivative).lower()}')
         print('Done.')
         return values
+
+
+
+    def load_info(self, subj):
+        info = pd.read_csv(self.path + '/subject_' + str(subj) + '/information.txt', sep=" ")
+        return info
+
+    def load_syllables(self, object):
+        """ :param object: str, 'hands', 'surface' or 'eyes' """
+        object_syllables = pd.read_pickle(object + '_syllables')
+        return object_syllables
+
+    def load_preprocessed_syllables(self, object):
+        """ :param object: str, 'hands', 'surface' or 'eyes' """
+        object_syllables = pd.read_pickle(object + '_preprocessed_syllables')
+        return object_syllables
+
+    def load_features(self, object, derivative=False):
+        """ :param object: str, 'hands', 'surface' or 'eyes' """
+        object_syllables = pd.read_pickle(object + f'_features_{str(derivative).lower()}')
+        return object_syllables
+
+    def load_surface_moving(self):
+        surface_moving = pd.read_pickle('surface_moving')
+        return surface_moving
 
 
     # check hand and surface labels
