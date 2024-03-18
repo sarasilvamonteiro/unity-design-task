@@ -5,7 +5,7 @@ from sklearn import preprocessing
 from scipy.interpolate import interp1d
 
 
-# last_update: 27 Feb 24
+# last_update: 18 Mar 24
 
 class ManageData():
     """
@@ -47,7 +47,7 @@ class ManageData():
                              'CLFUp', 'CLFDown']
                              #'LMUp', 'LMDown', 'RMUp', 'RMDown',  'CMUp', 'CMDown']
         #self.section_list = ['RFUp', 'LBUp', 'CFDown']
-        self.cmap = np.load("jan_24\surface_colormap.npy")
+        self.cmap = np.load("jan_24/surface_colormap.npy")
 
     def section_cmap(self, LCR, BMF, length, return_index=False):
         """ Indexes of 2D color map (surface top view). """
@@ -244,7 +244,8 @@ class ManageData():
         hand_syllables_df = pd.DataFrame()
         eye_syllables_df = pd.DataFrame()
         touched_spheres_df = pd.DataFrame()
-        section_dict = self.surface_section()
+        section_dict = self.surface_section() # this maps sphere ID to its initial position (surface section)
+        raw_time_df = pd.DataFrame()
 
         def save_to_syllable_df(object_df, object_data, hand, transpose=True):
             """
@@ -271,35 +272,48 @@ class ManageData():
 
 
         def get_section_direction():
+            """ Get the surface section where deformation happened.
+            Get if the deformation was upwards or downwards. """
 
-                if (hand_syllables_df.iloc[-1, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes, shown]).all():
+            if (hand_syllables_df.iloc[-1, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes, shown]).all():
 
-                    touched_spheres = touched_spheres_df[np.all(
-                        touched_spheres_df.iloc[:, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes,
-                                                                               shown], axis=1)]
-                    surface = surface_syllables_df[np.all(
-                        surface_syllables_df.iloc[:, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes,
-                                                                                 shown], axis=1)]
-                    for hand in ['Left', 'Right']:
-                        #print(f'syllable: {last_syllable_id}, hand: {hand.lower()}')
-                        sphereIDs = touched_spheres[touched_spheres['hand'] == hand]['SphereID']
-                        if sphereIDs.empty:
-                            continue
-                        main_sphere = int(sphereIDs.value_counts().idxmax())
-                        #print(main_sphere)
-                        y = surface[surface['hand'] == hand][f'Sphere{main_sphere}'].apply(lambda x: x['y'])
-                        #print(y)
-                        #print(np.mean(np.diff(y.astype(float))))
-                        # get direction of movement
-                        direction = "Up" if np.mean(np.diff(y.astype(float))) > 0 else "Down"
-                        # get surface section
-                        lcr, bmf = section_dict[main_sphere]
-                        #print(lcr, bmf, direction)
-                        # add values to all dfs
-                        surface_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
-                        hand_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
-                        eye_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
-                        touched_spheres_df.loc[sphereIDs.index, 'syllable'] = lcr + bmf + direction
+                touched_spheres = touched_spheres_df[np.all(
+                    touched_spheres_df.iloc[:, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes,
+                                                                           shown], axis=1)]
+                surface = surface_syllables_df[np.all(
+                    surface_syllables_df.iloc[:, [0, 2, 3, 4, 5]].values == [last_syllable_id, subj, trial, holes,
+                                                                             shown], axis=1)]
+                for hand in ['Left', 'Right']:
+                    #print(f'syllable: {last_syllable_id}, hand: {hand.lower()}')
+                    # Get IDs of touched spheres during this deformation
+                    sphereIDs = touched_spheres[touched_spheres['hand'] == hand]['SphereID']
+                    if sphereIDs.empty:
+                        continue
+                    # Track the movement of the main sphere (sphere that moved more)
+                    main_sphere = int(sphereIDs.value_counts().idxmax())
+                    #print(main_sphere)
+                    # Get y axis trajectory of main sphere
+                    y = surface[surface['hand'] == hand][f'Sphere{main_sphere}'].apply(lambda x: x['y'])
+                    #print(y)
+                    #print(np.mean(np.diff(y.astype(float))))
+                    # Get direction of movement (using the mean of its derivative)
+                    direction = "Up" if np.mean(np.diff(y.astype(float))) > 0 else "Down"
+                    # Get surface section by main sphere ID
+                    lcr, bmf = section_dict[main_sphere]
+                    #print(lcr, bmf, direction)
+                    # Add values to all dfs
+                    # boring..... we need to do this to make the column syllable as type object
+                    surface_syllables_df['syllable'] = surface_syllables_df['syllable'].astype(object)
+                    hand_syllables_df['syllable'] = hand_syllables_df['syllable'].astype(object)
+                    eye_syllables_df['syllable'] = eye_syllables_df['syllable'].astype(object)
+                    touched_spheres_df['syllable'] = touched_spheres_df['syllable'].astype(object)
+                    raw_time_df['syllable'] = raw_time_df['syllable'].astype(object)
+                    # add syllable section and direction to dataframe:
+                    surface_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
+                    hand_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
+                    eye_syllables_df.loc[y.index, 'syllable'] = lcr + bmf + direction
+                    touched_spheres_df.loc[sphereIDs.index, 'syllable'] = lcr + bmf + direction
+                    raw_time_df.loc[y.index, 'syllable'] = lcr + bmf + direction
 
 
         for subj in self.subjects:
@@ -340,17 +354,21 @@ class ManageData():
                     if any([f in L_touch for f in np.arange(frame-1, frame+2, 1)]) and syllable_id != 0:
                         ### save surface syllables ###
                         surface_syllables_df = save_to_syllable_df(surface_syllables_df,
-                                                                   surface_data.iloc[frame,
-                                                                   list(range(surface_data.shape[1]-3)) +
-                                                                   [surface_data.shape[1]-1]], hand='Left')
+                                                                   surface_data.iloc[frame, # positions
+                                                                   list(range(surface_data.shape[1]-3)) + # positions (cont.)
+                                                                   [surface_data.shape[1]-1]], hand='Left') # time
                         ### save hand syllables ###
                         hand_syllables_df = save_to_syllable_df(hand_syllables_df,
-                                                                Lhand_data.iloc[frame, list(range(Lhand_data.shape[1]-3)) +
-                                                                [Lhand_data.shape[1]-1]], hand='Left')
+                                                                Lhand_data.iloc[frame, list(range(Lhand_data.shape[1]-3)) +  # positions
+                                                                [Lhand_data.shape[1]-1]], hand='Left') # time
                         ### save eye syllables ###
                         eye_syllables_df = save_to_syllable_df(eye_syllables_df,
-                                                               general_data.iloc[frame, [1] +
-                                                               [general_data.shape[1]-1]], hand='Left')
+                                                               general_data.iloc[frame, [1] + # positions
+                                                               [general_data.shape[1]-1]], hand='Left') # time
+                        ### save raw time of each syllable ###
+                        raw_time_df = save_to_syllable_df(raw_time_df,
+                                                          general_data.iloc[frame, [general_data.shape[1]-1]],
+                                                          hand='Left')
                         # update last_syllable
                         last_syllable_id = syllable_id
                         touch = True
@@ -369,6 +387,10 @@ class ManageData():
                         eye_syllables_df = save_to_syllable_df(eye_syllables_df,
                                                                general_data.iloc[frame, [1] +
                                                                [general_data.shape[1]-1]], hand='Right')
+                        ### save raw time of each syllable ###
+                        raw_time_df = save_to_syllable_df(raw_time_df,
+                                                          general_data.iloc[frame, [general_data.shape[1] - 1]],
+                                                          hand='Right')
                         # update last_syllable
                         last_syllable_id = syllable_id
                         touch = True
@@ -402,10 +424,12 @@ class ManageData():
                         syllable_id = last_syllable_id + 1
 
         # save syllables
-        surface_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('surface_syllables')
-        hand_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('hands_syllables')
-        eye_syllables_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('eyes_syllables')
-        touched_spheres_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('sphereID_syllables')
+        #surface_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('surface_syllables')
+        #hand_syllables_df.set_index(['id', 'syllable','subject','trial', 'holes', 'level_order', 'hand']).to_pickle('hands_syllables')
+        #eye_syllables_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('eyes_syllables')
+        #touched_spheres_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('sphereID_syllables')
+        # to add:
+        raw_time_df.set_index(['id','syllable', 'subject', 'trial', 'holes', 'level_order', 'hand']).to_pickle('time_syllables')
         print('Done.')
         # ..............
 
