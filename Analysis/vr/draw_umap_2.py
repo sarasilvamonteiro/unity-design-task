@@ -15,6 +15,74 @@ data_manager = ManageData(IOS=True)
 
 # last_update: 19 Mar 24
 
+class DimRed():
+
+    def __init__(self, IOS=False, Windows=False, features_1=None, features_2=None):
+
+        self.IOS = IOS
+        self.Windows = Windows
+        self.data_manager = ManageData(IOS=self.IOS, Windows=self.Windows)
+        # Merge features (e.g. positions and derivative (velocities))
+        if type(features_1) != type(None) and type(features_2) != type(None):
+            self.features = pd.concat([features_1, features_2])
+        else:
+            self.features = features_1
+        self.trial_data = self.get_trial_data()
+
+
+    def get_trial_data(self):
+        """ Extract trial data. """
+        trial_data = self.features.loc[:, self.features.index.isin(self.data_manager.section_list, level=1), :]
+        return trial_data
+
+
+    def get_trajectories(self, holes='all', hand='all'):
+        print(f'Extracting trajectories...')
+        if holes == 'all':
+            holes = [1,2]
+        if hand == 'all':
+            hand = ['Left', 'Right']
+        trial_number = self.trial_data.index.get_level_values('trial')
+        trial_subjects = np.unique(self.trial_data.index.get_level_values('subject'))
+        trajectories = []
+        for trial in trial_number:
+            trial_trajectories = []
+            for subj in trial_subjects:
+                subj_trajectory = [syllable for syllable in self.trial_data.loc[:, :, subj, trial,
+                                                            holes, :, hand].index.get_level_values('syllable')]
+                trial_trajectories.append(subj_trajectory)
+            trajectories.append(trial_trajectories)
+        print(f'Done.')
+        return trajectories
+
+    def average_trajectories(self, trajectories=None, holes='all', hand='all'):
+        if type(trajectories) == type(None):
+            trajectories = self.get_trajectories(holes=holes, hand=hand)
+
+        # Use this if we do average over numbers (e.g. average position in the section... i dont like that...)
+        average_trajectory = []
+        for trial_traj in trajectories:
+            avg_trial_trajectory = np.ma.empty((2, max([len(subj) for subj in trial_traj]), len(trial_traj)), dtype=np.string_)
+            print(avg_trial_trajectory)
+            avg_trial_trajectory.mask = True
+            for subj, traj in enumerate(trial_traj):
+                print(subj, traj)
+                if traj != []:
+                    traj = np.expand_dims(traj,axis=0)
+                    print(traj)
+                    avg_trial_trajectory[:traj.shape[0], :traj.shape[1], subj] = traj
+        #        avg_trial_trajectory = avg_trial_trajectory.mean(axis=2)
+        #    average_trajectory.append(avg_trial_trajectory)
+
+        return average_trajectory
+
+
+
+
+
+
+
+
 def draw_umap(umap_values, hand, holes='all', trial='all', n_neighbors=15, min_dist=0.1, n_components=2, lr=1,
               metric='euclidean', vf_min_dist=1, pca_components=False, up_vs_down=False, balance=False):  # 'euclidean'
 
@@ -53,10 +121,12 @@ def draw_umap(umap_values, hand, holes='all', trial='all', n_neighbors=15, min_d
     # Average over all subjects by trial:
     # list for all subjects trajectory indices
 
-
+    print(trial_subjects)
+    print(len(trial_data))
     trial = 7
     trajectory_test = [] # [[subj1_trial1], [subj2_trial1], ...]
-    for subj in trial_subjects[:2]: # get all subjects
+    for subj in trial_subjects: # get all subjects
+        print(subj)
         # individual subject list for trial 1 trajectory indices (for now)
         subj_trajectory = []
         # Testing with just the first trial:
@@ -65,6 +135,11 @@ def draw_umap(umap_values, hand, holes='all', trial='all', n_neighbors=15, min_d
         for that_syllable in range(len(trial_data.loc[:,:,subj,trial,:,:,hand]))]
         trajectory_test.append(subj_trajectory)
     print(trajectory_test)
+
+
+
+
+
 
 
     #####################################
@@ -78,6 +153,17 @@ def draw_umap(umap_values, hand, holes='all', trial='all', n_neighbors=15, min_d
     labels, counts = np.unique(trial_syllables, return_counts=True)
     nr_train_samples = dict(zip(labels, counts))
     print(nr_train_samples)
+
+
+
+
+
+
+
+
+
+
+
     #####################################
     ##### Fit data to PCA and UMAP: #####
     #####################################
@@ -251,7 +337,8 @@ def draw_umap(umap_values, hand, holes='all', trial='all', n_neighbors=15, min_d
         avg_trial_trajectory = np.ma.empty((2, max([len(subj) for subj in trajectory_test]), len(trial_subjects)))
         avg_trial_trajectory.mask = True
         for subj, trajectory in enumerate(trajectory_test):
-            avg_trial_trajectory[:u[trajectory].T.shape[0], :u[trajectory].T.shape[1], subj] = u[trajectory].T
+            if trajectory != []:
+                avg_trial_trajectory[:u[trajectory].T.shape[0], :u[trajectory].T.shape[1], subj] = u[trajectory].T
         avg_trial_trajectory = avg_trial_trajectory.mean(axis=2)
         print(avg_trial_trajectory)
 
@@ -319,3 +406,4 @@ def draw_umap(umap_values, hand, holes='all', trial='all', n_neighbors=15, min_d
         plt.pause(0.1)
 
     #plt.show()
+
