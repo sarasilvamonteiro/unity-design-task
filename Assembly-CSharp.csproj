@@ -56,70 +56,72 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\StartSlider.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\Exploding Items\ExplodingItemController.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\EditorURL.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\CycleHandPairs.cs" />
     <Compile Include="Assets\Scripts\Create.cs" />
-    <Compile Include="Assets\Scripts\GetData.cs" />
-    <Compile Include="Assets\Scripts\MoveCursor.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Turntable\TurntableVisuals.cs" />
     <Compile Include="Assets\Scripts\Fly.cs" />
-    <Compile Include="Assets\Scripts\GenerateSurface.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Paint\RectToroid.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PoseShowcaseManager.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleAnchorFeedback.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\TransformRotationHandle.cs" />
     <Compile Include="Assets\Scripts\PhysicsCursor.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\PullCordHandle.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\TransformTranslationHandle.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\InertiaPostProcessProvider.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\PhysicsHands\Scripts\SceneCleaner.cs" />
+    <Compile Include="Assets\Scripts\GetData.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\Locomotion\Teleportation\Scripts\TeleportExampleManager.cs" />
     <Compile Include="Assets\Scripts\SurfaceInteractionPhysics.cs" />
-    <Compile Include="Assets\Scripts\OnCollision.cs" />
     <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleInteractionGlow.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Paint\ThickRibbonRenderer.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\TransformTool.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\ScaleOnEnable.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\PhysicsHands\Scripts\PlayerRecenter.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\XRControllerSupport\ControllerModelEnableDisable.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Paint\StrokeProcessor.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SwapGraspExample.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\Cursors\ProjectionPointer.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\Example Assets\Scripts\EditorURL.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleScaleUtil.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\XR Interaction Toolkit Integration\CreateSphere.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\UI\SliderVolume.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\PhysicsHands\Scripts\PhysicsState.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleMatchAnchorScaleAndState.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\ProjectionPostProcessProvider.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleInteractionEmission.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SpawnObjectAtPosition.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\TransformHandle.cs" />
+    <Compile Include="Assets\Scripts\GenerateSurface.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\PullCord.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\PhysicsHands\Scripts\CubeSpawner.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\PhysicsHands\Scripts\PhysicsGrasped.cs" />
+    <Compile Include="Assets\Scripts\StartSlider.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\PullCordVisuals.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\LineBetweenTransforms.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Paint\PinchStrokeProcessor.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PoseRecorderExampleManager.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\Cursors\SquishyPointer.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\UI\ScrollRectVolume.cs" />
     <Compile Include="Assets\Scripts\Surface.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PoseDetectorUIText.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\Aggregation Provider Examples\Scripts\Utility\MultideviceAlignment.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\UI\ToggleToggler.cs" />
+    <Compile Include="Assets\Scripts\MoveCursor.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleGrabBallFeedback.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleTransformUtil.cs" />
     <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\GettingStartedExampleManager.cs" />
     <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Turntable\Turntable.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\Aggregation Provider Examples\Scripts\Utility\MultideviceAlignment.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\TransformHandle.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\CycleHandPairs.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\ScaleOnEnable.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\Cursors\SquishyPointer.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\Exploding Items\ExplodingItemController.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\TransformRotationHandle.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleRendererUtil.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\TransformTranslationHandle.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\PhysicsHands\Scripts\PlayerRecenter.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleMatchAnchorScaleAndState.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\UI\ScrollRectVolume.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\LineBetweenTransforms.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\PhysicsHands\Scripts\CubeSpawner.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\ProjectionPostProcessProvider.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Paint\ThickRibbonRenderer.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\UI\ToggleToggler.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleGrabBallFeedback.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Paint\PinchStrokeProcessor.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\PullCordVisuals.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\XRControllerSupport\ControllerModelEnableDisable.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Turntable\TurntableVisuals.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PoseShowcaseManager.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\InertiaPostProcessProvider.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Paint\StrokeProcessor.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\EditorURL.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PoseDetectorUIText.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\Locomotion\Teleportation\Scripts\TeleportExampleManager.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleInteractionEmission.cs" />
     <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\WorkstationBehaviourExample.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleTransformUtil.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\Exploding Items\ExplodingItem.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\PhysicsHands\Scripts\SceneCleaner.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\Cursors\ProjectionPointer.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\MovePoseExample.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleAnchorFeedback.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\PullCord.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PoseRecorderExampleManager.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SwapGraspExample.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Paint\RectToroid.cs" />
+    <Compile Include="Assets\Scripts\OnCollision.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleRendererUtil.cs" />
     <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\Paint\PaintCursor.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SimpleScaleUtil.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\PullCordHandle.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\TransformTool.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\Example Assets\Scripts\EditorURL.cs" />
     <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\UI\SliderShadow.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\UI Input Examples\Scripts\UI\SliderVolume.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\XR Interaction Toolkit Integration\CreateSphere.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\SpawnObjectAtPosition.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\PhysicsHands\Scripts\PhysicsGrasped.cs" />
-    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\6.7.0\Examples\PhysicsHands\Scripts\PhysicsState.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\PullCord\Exploding Items\ExplodingItem.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Scripts\MovePoseExample.cs" />
+    <Compile Include="Assets\Scripts\SymmetryLink.cs" />
+    <Compile Include="Assets\Scripts\SymmetricSurface.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Samples\Ultraleap Tracking\6.7.0\Examples\Example Assets\Materials\DottedLineShader.shader" />
@@ -349,11 +351,11 @@
     <Reference Include="UnityEditor.UnityConnectModule">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.40f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
     </Reference>
-    <Reference Include="MoreLinq.Portable">
-      <HintPath>Assets\Plugins\MoreLinq\MoreLinq.Portable.dll</HintPath>
-    </Reference>
     <Reference Include="LibGit2Sharp">
       <HintPath>Library\PackageCache\com.ultraleap.dependencytoolkit@1.0.0-pre.2\ThirdParty\LibGit2Sharp\LibGit2Sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="MoreLinq.Portable">
+      <HintPath>Assets\Plugins\MoreLinq\MoreLinq.Portable.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.40f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
@@ -703,14 +705,20 @@
     <Reference Include="Unity.VSCode.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Ultraleap.Tracking.Controllers">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Controllers.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualStudio.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Timeline.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
+    <Reference Include="Ultraleap.Tracking.Hands">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Hands.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.HandRays.Editor">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.HandRays.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
       <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
@@ -718,115 +726,101 @@
     <Reference Include="Unity.TextMeshPro">
       <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.PlasticSCM.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rider.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.Hands">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Hands.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.Core">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="LeapMotion.LeapCSharp">
-      <HintPath>Library\ScriptAssemblies\LeapMotion.LeapCSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.Core.Editor">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Core.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.Hands.Editor">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Hands.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.InteractionEngine">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.InteractionEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.InteractionEngine.Editor">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.InteractionEngine.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.DependencyToolkit">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.DependencyToolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.SpatialTracking">
-      <HintPath>Library\ScriptAssemblies\UnityEngine.SpatialTracking.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.XR.CoreUtils">
-      <HintPath>Library\ScriptAssemblies\Unity.XR.CoreUtils.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.HandRays.Editor">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.HandRays.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.XR.CoreUtils.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.XR.CoreUtils.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.Controllers">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Controllers.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Mathematics.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.ImageDistort">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.ImageDistort.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.XR.Interaction.Toolkit.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.XR.Interaction.Toolkit.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.XR.Interaction.Toolkit">
       <HintPath>Library\ScriptAssemblies\Unity.XR.Interaction.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.Locomotion">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Locomotion.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.UIInput.Editor">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.UIInput.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Mathematics">
-      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.XR.LegacyInputHelpers">
-      <HintPath>Library\ScriptAssemblies\UnityEditor.XR.LegacyInputHelpers.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.SpatialTracking">
-      <HintPath>Library\ScriptAssemblies\UnityEditor.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="Unity.InputSystem">
       <HintPath>Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
     </Reference>
-    <Reference Include="Ultraleap.Tracking.PhysicsHands.Editor">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.PhysicsHands.Editor.dll</HintPath>
+    <Reference Include="Unity.Rider.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Ultraleap.Tracking.Aggregation">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Aggregation.dll</HintPath>
+    <Reference Include="Unity.PlasticSCM.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Ultraleap.Tracking.HandRays">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.HandRays.dll</HintPath>
+    <Reference Include="UnityEngine.SpatialTracking">
+      <HintPath>Library\ScriptAssemblies\UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
-    <Reference Include="Ultraleap.Tracking.UIInput">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.UIInput.dll</HintPath>
-    </Reference>
-    <Reference Include="Ultraleap.Tracking.PhysicsHands">
-      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.PhysicsHands.dll</HintPath>
+    <Reference Include="Ultraleap.DependencyToolkit">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.DependencyToolkit.dll</HintPath>
     </Reference>
     <Reference Include="Ultraleap.Tracking.Aggregation.Editor">
       <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Aggregation.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.CoreUtils.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.XR.CoreUtils.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.HandRays">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.HandRays.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.Aggregation">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Aggregation.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.XR.LegacyInputHelpers">
       <HintPath>Library\ScriptAssemblies\UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.PhysicsHands">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.PhysicsHands.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.Hands.Editor">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Hands.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.PhysicsHands.Editor">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.PhysicsHands.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.XR.LegacyInputHelpers">
+      <HintPath>Library\ScriptAssemblies\UnityEditor.XR.LegacyInputHelpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.InteractionEngine">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.InteractionEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.CoreUtils">
+      <HintPath>Library\ScriptAssemblies\Unity.XR.CoreUtils.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.Core">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.UIInput">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.UIInput.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.Interaction.Toolkit.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.XR.Interaction.Toolkit.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.InteractionEngine.Editor">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.InteractionEngine.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.UIInput.Editor">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.UIInput.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.ImageDistort">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.ImageDistort.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.SpatialTracking">
+      <HintPath>Library\ScriptAssemblies\UnityEditor.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.Locomotion">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Locomotion.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultraleap.Tracking.Core.Editor">
+      <HintPath>Library\ScriptAssemblies\Ultraleap.Tracking.Core.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="LeapMotion.LeapCSharp">
+      <HintPath>Library\ScriptAssemblies\LeapMotion.LeapCSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
       <Project>{88D50D58-2FB4-69C8-2CAE-E428D9C3F893}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
-    </ProjectReference>
-    <ProjectReference Include="UnityEditor.UI.csproj">
-      <Project>{D98411F6-CB1B-3448-9B6B-E4F93E9C21BD}</Project>
-      <Name>UnityEditor.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="UnityEngine.UI.csproj">
-      <Project>{843DA0A7-88F2-148A-0779-E0CDE3FFBE06}</Project>
-      <Name>UnityEngine.UI</Name>
     </ProjectReference>
     <ProjectReference Include="ZibraAILiquid.csproj">
       <Project>{64505E1F-B2DE-E771-11DC-3CCC78BAB933}</Project>
@@ -835,6 +829,14 @@
     <ProjectReference Include="ZibraAILiquid.Settings.Editor.csproj">
       <Project>{88EE5B06-3888-256E-EF8D-37D70FEE005E}</Project>
       <Name>ZibraAILiquid.Settings.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEditor.UI.csproj">
+      <Project>{D98411F6-CB1B-3448-9B6B-E4F93E9C21BD}</Project>
+      <Name>UnityEditor.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEngine.UI.csproj">
+      <Project>{843DA0A7-88F2-148A-0779-E0CDE3FFBE06}</Project>
+      <Name>UnityEngine.UI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

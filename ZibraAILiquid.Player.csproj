@@ -56,43 +56,43 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\VoxelEmbedding.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidCollider.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidSpeciesModifier.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\AnalyticSDFCollider.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\NeuralSDFGenerator.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\SkinnedMeshSDF.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\NeuralCollider.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Utilities\NamespaceDocumentation.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Utilities\RenderPipelineDetector.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\SDFObject.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\VoxelRepresentation.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\ZibraLiquidAdvancedRenderParameters.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\LiquidHDRPRenderComponent.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\ZibraLiquidBridge.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidVoid.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Utilities\ArrayCompactifier.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\SDFObjects\Editor\VSAttribution.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\ZibraLiquidMaterialParameters.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Utilities\ZibraHash128.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\MeshUtilities.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidDetector.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidEmitter.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\AssemblyInfo.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\AnalyticSDF.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidForceField.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\SDFObjects\Editor\ZibraServerAuthenticationManager.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\ZibraLiquidSolverParameters.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\ZibraManipulatorManager.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\LiquidHDRPRenderComponent.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\ZibraLiquidAdvancedRenderParameters.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidVoid.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\ZibraLiquidAnalytics.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\MeshUtilities.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\ZibraLiquidGPUGarbageCollector.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\ZibraLiquidDebug.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidEmitter.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\AnalyticSDF.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\MeshRepresentation.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\NeuralCollider.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidCollider.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\VoxelRepresentation.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\LiquidURPRenderComponent.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Utilities\ArrayCompactifier.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\ZibraLiquidMaterialParameters.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Utilities\GizmosHelper.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Utilities\ZibraHash128.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\NeuralSDF.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidSpeciesModifier.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Utilities\RenderPipelineDetector.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidForceField.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\ZibraManipulatorManager.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\SDFObject.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\VoxelEmbedding.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\ZibraLiquid.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulator.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\ZibraLiquidAnalytics.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Utilities\GizmosHelper.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\ZibraLiquidGPUGarbageCollector.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\DataStructures\MeshRepresentation.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\ZibraLiquidDebug.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Utilities\NamespaceDocumentation.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\AssemblyInfo.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\NeuralSDFGenerator.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\ZibraLiquidBridge.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\ZibraLiquidDetector.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\AnalyticSDFCollider.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\Solver\Manipulators\SDF\SkinnedMeshSDF.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Scripts\SDFObjects\Editor\ZibraServerAuthenticationManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Plugins\Zibra\Liquids\Documentation\APIReference\search\enums_1.js.txt" />
@@ -392,11 +392,11 @@
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
-    <Reference Include="MoreLinq.Portable">
-      <HintPath>Assets\Plugins\MoreLinq\MoreLinq.Portable.dll</HintPath>
-    </Reference>
     <Reference Include="LibGit2Sharp">
       <HintPath>Library\PackageCache\com.ultraleap.dependencytoolkit@1.0.0-pre.2\ThirdParty\LibGit2Sharp\LibGit2Sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="MoreLinq.Portable">
+      <HintPath>Assets\Plugins\MoreLinq\MoreLinq.Portable.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.40f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>

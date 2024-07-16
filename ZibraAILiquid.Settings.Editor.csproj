@@ -56,37 +56,37 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\ButtonStrip\ButtonStrip.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\LoadingSpinner\LoadingSpinner.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidForceFieldEditor.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraAdvancedParametersEditor.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidEmitterEditor.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidSpeciesModifierEditor.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Foundation\EditorUtilities\UIToolkitEditorUtility.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\WelcomeWindow\ZibraWelcomeWindow.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Configs\ZibraAIPackage.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Window\LiquidSettingsWindow.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidDetectorEditor.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\SettingsWindow\PackageSettingsWindow.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Settings\IPackageSettings.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Window\Tabs\SettingsTab.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\SettingsBlock\SettingsBlock.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Settings\LiquidEditorMenu.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraNeuralSDFEditor.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\SettingsWindow\BaseTab.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\SkinnedMeshSDFEditor.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidManipulatorEditor.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Settings\PackageSettings.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidsBakingUtility.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidHelpers.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\Hyperlink\Hyperlink.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\SelectableLabel\SelectableLabel.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidVoidEditor.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraColliderEditor.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\HelpBox\HelpBox.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\AssemblyInfo.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\SettingsWindow\PackageSettingsWindow.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\AboutTab\AboutTab.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\ButtonStrip\ButtonStrip.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidDetectorEditor.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\SettingsWindow\BaseTab.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Foundation\EditorUtilities\UIToolkitEditorUtility.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\LoadingSpinner\LoadingSpinner.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidForceFieldEditor.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidManipulatorEditor.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidEditor.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\WelcomeWindow\ZibraWelcomeWindow.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\SkinnedMeshSDFEditor.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\AssemblyInfo.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\SelectableLabel\SelectableLabel.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\HelpBox\HelpBox.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Window\LiquidSettingsWindow.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraNeuralSDFEditor.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraColliderEditor.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Settings\LiquidEditorMenu.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\Controls\Hyperlink\Hyperlink.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidVoidEditor.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraAdvancedParametersEditor.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\Solver\ZibraLiquidEmitterEditor.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Configs\ZibraAIPackage.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Window\Tabs\SettingsTab.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\Settings\PackageSettings.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Editor\UI\UIToolkit\AboutTab\AboutTab.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Plugins\Zibra\Liquids\Editor\csc.rsp" />
@@ -354,8 +354,14 @@
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Editor\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
+    <Reference Include="LibGit2Sharp">
+      <HintPath>Library\PackageCache\com.ultraleap.dependencytoolkit@1.0.0-pre.2\ThirdParty\LibGit2Sharp\LibGit2Sharp.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Plastic.Newtonsoft.Json">
       <HintPath>Library\PackageCache\com.unity.collab-proxy@1.17.2\Lib\Editor\PlasticSCM\Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="MoreLinq.Portable">
+      <HintPath>Assets\Plugins\MoreLinq\MoreLinq.Portable.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Plastic.Antlr3.Runtime">
       <HintPath>Library\PackageCache\com.unity.collab-proxy@1.17.2\Lib\Editor\PlasticSCM\Unity.Plastic.Antlr3.Runtime.dll</HintPath>
@@ -363,17 +369,11 @@
     <Reference Include="log4netPlastic">
       <HintPath>Library\PackageCache\com.unity.collab-proxy@1.17.2\Lib\Editor\PlasticSCM\log4netPlastic.dll</HintPath>
     </Reference>
-    <Reference Include="unityplastic">
-      <HintPath>Library\PackageCache\com.unity.collab-proxy@1.17.2\Lib\Editor\PlasticSCM\unityplastic.dll</HintPath>
-    </Reference>
-    <Reference Include="MoreLinq.Portable">
-      <HintPath>Assets\Plugins\MoreLinq\MoreLinq.Portable.dll</HintPath>
-    </Reference>
     <Reference Include="geometry3">
       <HintPath>Assets\Plugins\Clayxels\Editor\retopo\geometry3.dll</HintPath>
     </Reference>
-    <Reference Include="LibGit2Sharp">
-      <HintPath>Library\PackageCache\com.ultraleap.dependencytoolkit@1.0.0-pre.2\ThirdParty\LibGit2Sharp\LibGit2Sharp.dll</HintPath>
+    <Reference Include="unityplastic">
+      <HintPath>Library\PackageCache\com.unity.collab-proxy@1.17.2\Lib\Editor\PlasticSCM\unityplastic.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Library\PackageCache\com.unity.ext.nunit@1.0.6\net35\unity-custom\nunit.framework.dll</HintPath>

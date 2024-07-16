@@ -56,11 +56,11 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Samples\AssemblyInfo.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Samples\Scripts\ZibraFreeCamera.cs" />
-    <Compile Include="Assets\Plugins\Zibra\Liquids\Samples\Scripts\ZibraGravityManipulator.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Samples\Scripts\ZibraTimingsOverlay.cs" />
     <Compile Include="Assets\Plugins\Zibra\Liquids\Samples\Scripts\ZibraPerformanceOverlay.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Samples\Scripts\ZibraGravityManipulator.cs" />
+    <Compile Include="Assets\Plugins\Zibra\Liquids\Samples\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Plugins\Zibra\Liquids\Samples\ZibraAILiquid.Samples.asmdef" />
@@ -264,11 +264,11 @@
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
-    <Reference Include="MoreLinq.Portable">
-      <HintPath>Assets\Plugins\MoreLinq\MoreLinq.Portable.dll</HintPath>
-    </Reference>
     <Reference Include="LibGit2Sharp">
       <HintPath>Library\PackageCache\com.ultraleap.dependencytoolkit@1.0.0-pre.2\ThirdParty\LibGit2Sharp\LibGit2Sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="MoreLinq.Portable">
+      <HintPath>Assets\Plugins\MoreLinq\MoreLinq.Portable.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.40f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
